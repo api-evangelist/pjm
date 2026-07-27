@@ -1,0 +1,220 @@
+aid: pjm
+url: https://raw.githubusercontent.com/api-evangelist/pjm/refs/heads/main/apis.yml
+name: PJM Interconnection
+kind: company
+description: >-
+  PJM Interconnection is the regional transmission organization (RTO) that operates
+  the largest competitive wholesale electricity market in the United States,
+  coordinating the movement of electricity across all or parts of Delaware,
+  Illinois, Indiana, Kentucky, Maryland, Michigan, New Jersey, North Carolina,
+  Ohio, Pennsylvania, Tennessee, Virginia, West Virginia and the District of
+  Columbia for roughly 67 million people. PJM sits at the wholesale layer of the
+  energy value chain — it has no retail customers, so no Green Button, ESPI or
+  consumer data-sharing obligation applies to it. Its API posture is honestly
+  "rich data, universally gated": PJM publishes a large machine-readable market
+  data catalogue through the Data Miner 2 API at https://api.pjm.com/api/v1 and an
+  Azure API Management developer portal at https://apiportal.pjm.com, but every
+  feed returns HTTP 401 anonymously and a free subscription key is only issued
+  after a PJM Tools account is registered and approved by a Customer Account
+  Manager. Its one genuinely mandated interface is the FERC Order 889 / NAESB WEQ
+  OASIS node, which is verifiably live and standards-conformant at
+  https://pjmoasis.pjm.com, though template submission also requires an
+  authenticated PJM SSO session.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+tags:
+- Energy
+- United States
+- Energy Markets
+- Electricity
+- Grid
+- System Operator
+- Wholesale Electricity
+- Transmission
+- Market Data
+- Demand Response
+created: '2026-07-27'
+modified: '2026-07-27'
+specificationVersion: '0.19'
+apis:
+- aid: pjm:pjm-data-miner-2-api
+  name: PJM Data Miner 2 API
+  description: >-
+    PJM's public wholesale market and system data catalogue, exposed as a REST API
+    behind Azure API Management. Feeds include day-ahead and real-time hourly and
+    five-minute LMPs, ancillary service prices and market results, generation by
+    fuel type, hourly metered/estimated/preliminary load, load forecasts,
+    generation and transmission outages, FTR auction bids and zonal LMPs, pnode and
+    aggregate definitions, and uplift and billing determinants. Each feed supports
+    a /metadata call and a search call with rowCount/startRow paging, field
+    selection, sorting and date-range filters, and JSON or CSV output. The data is
+    designated public by PJM and the key is free, but anonymous calls are rejected
+    — verified HTTP 401 on GET https://api.pjm.com/api/v1/gen_by_fuel on 2026-07-27
+    — and redistribution requires at minimum a PJM Associate Membership.
+  humanURL: https://www.pjm.com/markets-and-operations/etools/data-miner-2
+  baseURL: https://api.pjm.com/api/v1
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  tags:
+  - Market Data
+  - Electricity
+  - Energy Markets
+  - Locational Marginal Pricing
+  - Load
+  - Outages
+  properties:
+  - type: Documentation
+    url: https://www.pjm.com/markets-and-operations/etools/data-miner-2
+  - type: APIPortal
+    url: https://apiportal.pjm.com/
+  - type: Guide
+    url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+  - type: SwaggerUI
+    url: https://services.pjm.com/PJMDataminerApi/swagger
+  - type: Console
+    url: https://dataminer2.pjm.com/list
+  - type: SignUp
+    url: https://accountmanager.pjm.com/accountmanager/pages/public/new-user.jsf
+- aid: pjm:pjm-oasis-template-api
+  name: PJM OASIS Template API
+  description: >-
+    PJM's Open Access Same-Time Information System (OASIS) node, the FERC Order 889
+    obligation implemented against the NAESB Wholesale Electric Quadrant business
+    practice standards. PJM states support for NAESB WEQ-002 (Standards and
+    Communication Protocol) and WEQ-003 (Data Dictionary) versions 2.0, 2.1, 2.2
+    and 3.3, accepting query/response and input/response templates over HTTP GET
+    (Content-type text/plain) and POST (application/x-www-form-urlencoded) against
+    the template base URL, plus three PJM custom templates (pjmannulment,
+    pjmtransreq, pjmtsrcomment). The NAESB WEQ-002-4.5.2 public information page at
+    https://pjmoasis.pjm.com/OASIS/PJM/INFO.HTM is served anonymously (verified
+    HTTP 200 on 2026-07-27); template submission itself requires a PJM SSO session
+    token or the PJM Command Line Interface tool.
+  humanURL: https://www.pjm.com/markets-and-operations/etools/oasis.aspx
+  baseURL: https://pjmoasis.pjm.com/OASIS/PJM/data/
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  tags:
+  - OASIS
+  - Transmission
+  - NAESB
+  - FERC Order 889
+  - Available Transfer Capability
+  properties:
+  - type: Documentation
+    url: https://www.pjm.com/markets-and-operations/etools/oasis.aspx
+  - type: Guide
+    url: https://www.pjm.com/-/media/DotCom/etools/oasis/pjm-oasis-api-user-guide.pdf
+  - type: PublicInformation
+    url: https://pjmoasis.pjm.com/OASIS/PJM/INFO.HTM
+  - type: Sandbox
+    url: https://oasistrain.pjm.com/
+  - type: CLI
+    url: https://www.pjm.com/-/media/DotCom/etools/pjm-command-line-interface-java-11.zip
+  - type: Standard
+    url: https://www.naesb.org/weq/default.asp
+- aid: pjm:pjm-browserless-authentication-api
+  name: PJM Browserless Authentication API
+  description: >-
+    The REST authentication front door for every browserless/API integration with
+    PJM eTools. A client POSTs to the PJM single sign-on service with
+    X-OpenAM-Username and X-OpenAM-Password headers and receives a JSON tokenId,
+    which is then presented as a pjmauth cookie on subsequent tool API calls, and
+    released via a logout call. PJM has additionally moved custom-code REST clients
+    onto PKI, requiring a two-way TLS client certificate against the
+    access/authenticate/pjmauthcert endpoint alongside credentials. The service is
+    ForgeRock OpenAM — verified live with HTTP 405 on GET
+    https://sso.pjm.com/access/authenticate/ on 2026-07-27, confirming the
+    documented POST-only endpoint.
+  humanURL: https://www.pjm.com/markets-and-operations/etools/security.aspx
+  baseURL: https://sso.pjm.com/access
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  tags:
+  - Authentication
+  - Single Sign-On
+  - Security
+  - PKI
+  properties:
+  - type: Guide
+    url: https://www.pjm.com/-/media/DotCom/etools/pjm-browserless-authentication-guide.pdf
+  - type: Documentation
+    url: https://www.pjm.com/markets-and-operations/etools/security.aspx
+  - type: Guide
+    url: https://www.pjm.com/-/media/DotCom/etools/security/pki-authentication-guide.pdf
+  - type: Sandbox
+    url: https://ssotrain.pjm.com/
+- aid: pjm:pjm-inschedule-api
+  name: PJM InSchedule Browserless API
+  description: >-
+    The browserless REST interface to PJM InSchedule, the eTool market participants
+    use to submit and retrieve bilateral internal energy transaction schedules and
+    contracts. PJM's browserless authentication guide documents CSV file upload
+    under /inschedule/rest/secure/upload/file/{filename} and CSV retrieval under
+    /inschedule/rest/secure/download/csv/contracts with start and stop date
+    parameters, both authenticated with a pjmauth session cookie. Anonymous access
+    is refused — an unauthenticated GET of the documented contracts endpoint on
+    2026-07-27 returned the ForgeRock OpenAM sign-in page rather than data. This is
+    a member/participant surface, not an open data API.
+  humanURL: https://www.pjm.com/markets-and-operations/etools/inschedule.aspx
+  baseURL: https://insched.pjm.com/inschedule/rest
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  tags:
+  - Scheduling
+  - Bilateral Transactions
+  - Energy Markets
+  - Members Only
+  properties:
+  - type: Guide
+    url: https://www.pjm.com/-/media/DotCom/etools/pjm-browserless-authentication-guide.pdf
+  - type: Sandbox
+    url: https://inschedtrain.pjm.com/
+- aid: pjm:pjm-edart-api
+  name: PJM eDART Browserless API
+  description: >-
+    The browserless XML-over-HTTP interface to eDART, PJM's Dispatcher Applications
+    and Reporting Tool, used by transmission owners and generation owners to file
+    and query transmission and generator outage tickets, voltage schedules and
+    other reliability data. PJM publishes the XML document definitions for the
+    general endpoints openly at
+    https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html (verified HTTP
+    200, ~482KB, on 2026-07-27), while the endpoints themselves sit behind PJM SSO
+    and PKI at https://edartsso.pjm.com/edart/. Documentation is public; the data
+    is participant-only.
+  humanURL: https://www.pjm.com/markets-and-operations/etools/edart.aspx
+  baseURL: https://edartsso.pjm.com/edart/
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  tags:
+  - Outages
+  - Reliability
+  - Transmission
+  - XML
+  - Members Only
+  properties:
+  - type: Documentation
+    url: https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html
+  - type: Guide
+    url: https://www.pjm.com/-/media/DotCom/etools/edart/dart-browserless-user-guide.pdf
+  - type: Sandbox
+    url: https://edartssotrain.pjm.com/edartsso
+common:
+- type: Website
+  url: https://www.pjm.com/
+- type: APIPortal
+  url: https://apiportal.pjm.com/
+- type: Documentation
+  url: https://www.pjm.com/markets-and-operations/etools
+- type: SignUp
+  url: https://accountmanager.pjm.com/accountmanager/pages/public/new-user.jsf
+- type: Authentication
+  url: https://www.pjm.com/-/media/DotCom/etools/pjm-browserless-authentication-guide.pdf
+- type: Security
+  url: https://www.pjm.com/markets-and-operations/etools/security.aspx
+- type: Blog
+  url: https://insidelines.pjm.com/
+- type: Learning
+  url: https://learn.pjm.com/
+- type: Support
+  url: https://pjm.my.site.com/publicknowledge/s/
+- type: LinkedIn
+  url: https://www.linkedin.com/company/pjm-interconnection
+- type: Legal
+  url: https://www.pjm.com/about-pjm/legal
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

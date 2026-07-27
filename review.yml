@@ -1,0 +1,366 @@
+aid: pjm
+name: PJM Interconnection
+review:
+  question: >-
+    Does PJM Interconnection expose a real, documented public API surface, and does
+    any energy data mandate apply to it that it has actually implemented?
+  answer: true
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  method: >-
+    Anonymous HTTP probing of pjm.com and its subdomains, plus retrieval and
+    full-text extraction of PJM's own published PDF guides (Data Miner API Guide,
+    OASIS API User Guide, Browserless Authentication Guide, eDART Browserless User
+    Guide). Every URL below carries the HTTP status observed on 2026-07-27.
+
+mandate:
+  homeMarket: United States
+  tier: system-operator
+  regime: other
+  regimeDetail: >-
+    No consumer energy data right applies to PJM. PJM is a wholesale regional
+    transmission organization with no retail customers, so Green Button / NAESB
+    ESPI, the Australian Consumer Data Right, the Ontario Green Button regulation
+    and UK-style smart-meter infrastructure mandates are all out of scope for it.
+    The obligation that does apply is the FERC Order 889 requirement that
+    transmission providers operate an Open Access Same-Time Information System
+    (OASIS), implemented against the NAESB Wholesale Electric Quadrant business
+    practice standards WEQ-002 (Standards and Communication Protocol) and WEQ-003
+    (Data Dictionary). That is a wholesale transmission-transparency obligation,
+    not a consumer data right, and it is recorded here as "other".
+  status: live-implemented
+  statusEvidence:
+    - >-
+      GET https://pjmoasis.pjm.com/OASIS/PJM/INFO.HTM returned HTTP 200 anonymously
+      (18,417 bytes) and is the NAESB WEQ-002-4.5.2 mandated public "Online
+      Resources" posting, carrying explicitly numbered standard references
+      (001-13.1.4 PJM waivers, 001-C exemptions, 002-4.3.4.2 Emergency Procedures,
+      002-4.5.1A NERC TLR, 002-4.5.1B ATC/CBM/TRM methodology, 002-4.5.1C service
+      request status, 002-4.5.1D tariff, 002-4.5.2 OASIS home page). This is a
+      standards-conformant surface, not a claim.
+    - >-
+      PJM's own OASIS API User Guide (Revision 04, effective 2023-01-27, retrieved
+      HTTP 200, 1,322,297 bytes from
+      https://www.pjm.com/-/media/DotCom/etools/oasis/pjm-oasis-api-user-guide.pdf)
+      states the PJM OASIS supports NAESB WEQ-002 and WEQ-003 versions 2.0, 2.1,
+      2.2 and 3.3, gives the production template base URL
+      https://pjmoasis.pjm.com/OASIS/PJM/data/ and the training base URL
+      https://oasistrain.pjm.com/OASIS/PJM/data/, and documents GET
+      (Content-type text/plain) and POST (application/x-www-form-urlencoded)
+      submission per WEQ-002-4.2.4 through 4.2.7, plus three PJM custom templates
+      (pjmannulment, pjmtransreq, pjmtsrcomment).
+    - >-
+      GET https://oasis.pjm.com/ returned HTTP 302 to
+      https://www.pjm.com/markets-and-operations/etools/oasis.aspx (HTTP 200),
+      which links the OASIS user guide, the OASIS API user guide, the Java 11+
+      command line interface ZIP (HTTP 200), and monthly confirmed OASIS
+      reservation data as anonymous CSV/ZIP/XLSX downloads back to 2018 — e.g.
+      /-/media/DotCom/etools/oasis/confirmed-oasis-requests/2026/2026-july.csv.
+  statusCaveat: >-
+    The mandated OASIS node is live and conformant, but the machine-readable
+    template interface is NOT anonymous: PJM's OASIS API User Guide requires either
+    a browser session after login or a PJM SSO token obtained via the Browserless
+    Authentication Guide. The mandate produced a real standards-based API; it did
+    not produce an open one. Bare GET of
+    https://pjmoasis.pjm.com/oasis/PJM/data?TEMPLATE=query_transstatus&VERSION=1.5
+    returned HTTP 404 anonymously.
+
+  dataStandard: >-
+    NAESB WEQ-002 (Standards and Communication Protocol) and WEQ-003 (Data
+    Dictionary), versions 2.0, 2.1, 2.2 and 3.3, for the OASIS node. Data Miner 2
+    is a proprietary PJM feed shape (feed short names such as da_hrl_lmps,
+    rt_fivemin_hrl_lmps, gen_by_fuel, hrl_load_metered) with no standard reference
+    found. eDART uses PJM-proprietary XML documented at
+    https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html. No Green
+    Button / ESPI, no CIM 61968/61970, no OpenADR, no IEEE 2030.5 and no OCPP/OCPI
+    reference was found anywhere on the PJM developer surface.
+
+  consumerVsMarketSplit:
+    consumerDataApi: false
+    consumerDataNote: >-
+      PJM has no retail customers and publishes no individual-customer usage or
+      billing API. There is no Green Button Download My Data or Connect My Data
+      surface, and no third-party consent or accreditation mechanism, because none
+      applies to an RTO.
+    marketDataOpen: false
+    marketDataNote: >-
+      This is the finding. PJM publishes a genuinely deep wholesale market data
+      catalogue and calls it "public data", but it is not anonymously open. GET
+      https://api.pjm.com/api/v1/gen_by_fuel?rowCount=1 returned HTTP 401 with no
+      key; GET https://api.pjm.com/api/v1/ returned HTTP 401; the training host GET
+      https://api-train.pjm.com/api/v1/pnode returned HTTP 401. A nonexistent feed
+      name returns HTTP 404, so the 401s confirm real, key-gated feeds rather than
+      missing routes. The Data Miner API Guide also states that "redistribution of
+      information and or data contained in or derived from Data Miner is strictly
+      prohibited without a PJM membership", with a minimum Associate Membership
+      required for commercial use or derivatives. The only anonymously reachable
+      PJM data surfaces found were the OASIS public information page, the monthly
+      confirmed OASIS reservation CSV/ZIP archive on pjm.com, and the emergency
+      procedures dashboard at
+      https://emergencyprocedures.pjm.com/ep/pages/dashboard.jsf (HTTP 200, HTML,
+      not an API). Contrast with EIA, which serves comparable US energy data
+      anonymously — PJM does not.
+
+  accessGate: application-approval
+  accessGateSteps: >-
+    1) Register a PJM Tools username at
+    https://accountmanager.pjm.com/accountmanager/pages/public/new-user.jsf (or via
+    the Sign up link on https://apiportal.pjm.com/, HTTP 200) and set a password
+    within a four-hour window. 2) PJM member companies then log into PJM Account
+    Manager, open the Account Access tab and use "Request Access" to select Data
+    Miner API. 3) Non-member companies must instead email accountmanager@pjm.com
+    with the statement "I confirm that the PJM Data will be used for internal
+    business purposes only", including their Account Manager user id and
+    subscribing email address, and wait for provisioning instructions. 4) A
+    Customer Account Manager approves the request; a confirmation email is issued.
+    5) The subscription key is then retrieved from View Profile > Your
+    Subscriptions in PJM Tools. 6) Commercial use, publishing or derivative works
+    require becoming a PJM member (Associate Membership minimum). Rate limits
+    differ by status: 600 connections per minute for members, 6 per minute for
+    non-members.
+  gated: true
+
+  authModel:
+    - scheme: API key (Azure API Management subscription key)
+      appliesTo: Data Miner 2 API (https://api.pjm.com/api/v1)
+      detail: >-
+        Header Ocp-Apim-Subscription-Key, or query parameter subscription-key
+        appended to the URL, per the PJM Data Miner API Guide (2026 revision).
+        Azure API Management confirmed by the developer portal config at
+        https://apiportal.pjm.com/config.json (HTTP 200), which returns
+        managementApiUrl
+        https://apim-prd.management.azure-api.net/.../Microsoft.ApiManagement/service/apim-prd,
+        managementApiVersion 2022-04-01-preview and powCaptcha.Enabled true.
+    - scheme: Session token over single sign-on (ForgeRock OpenAM)
+      appliesTo: OASIS, InSchedule, eDART and other PJM eTools
+      detail: >-
+        POST to https://sso.pjm.com/access/authenticate/ with headers
+        X-OpenAM-Username and X-OpenAM-Password returns a JSON body containing
+        tokenId; that token is then presented as a "pjmauth" cookie (pjmauthtrain
+        in training) on tool API calls, and released via POST
+        https://sso.pjm.com/access/logout/. GET
+        https://sso.pjm.com/access/authenticate/ returned HTTP 405 Method Not
+        Allowed on 2026-07-27, confirming the documented POST-only endpoint is
+        live. An anonymous GET of the documented InSchedule contracts endpoint
+        returned the ForgeRock OpenAM login page (HTTP 200 HTML, CDDL header), not
+        data.
+    - scheme: mTLS / PKI client certificate
+      appliesTo: Custom-code REST clients against PJM eTools
+      detail: >-
+        PJM's tools security programme requires establishing two-way SSL with a
+        client certificate against the access/authenticate/pjmauthcert endpoint
+        alongside credentials to obtain the SSO token. Documented in
+        https://www.pjm.com/-/media/DotCom/etools/security/pki-authentication-guide.pdf
+        (HTTP 200, 1,296,372 bytes).
+    - scheme: OpenID Connect discovery
+      appliesTo: none
+      detail: >-
+        GET https://api.pjm.com/.well-known/openid-configuration returned HTTP 404.
+        GET https://www.pjm.com/.well-known/openid-configuration returned HTTP 200
+        but served the pjm.com HTML shell, not a discovery document — treated as a
+        soft 404. No OIDC discovery is published.
+
+findings:
+  developerPortal:
+    url: https://apiportal.pjm.com/
+    status: 200
+    confirmed: true
+    platform: Azure API Management developer portal
+    note: >-
+      Title "Home - PJM API Portal", description "Discover APIs, learn how to use
+      them, try them out interactively, and sign up to acquire keys." The portal
+      home page and /signin (HTTP 200) are anonymous, but the API catalogue is not:
+      GET https://apiportal.pjm.com/apis returned HTTP 404 anonymously, as did
+      /api-details and /developer. PJM's Data Miner API Guide confirms the detailed
+      API specification is only reachable after signing in and clicking through to
+      the "DataMiner Web API". This is a real developer portal, but it is not
+      self-serve.
+  specHarvest:
+    openapiHarvested: false
+    specsCount: 0
+    note: >-
+      A publicly reachable Swagger UI exists at
+      https://services.pjm.com/PJMDataminerApi/swagger (HTTP 200, titled "PJM
+      Dataminer API", Swashbuckle-generated, apiKeyName "api_key" in query,
+      oAuth2Enabled false). Its declared discovery path is swagger/docs/v1, but GET
+      https://services.pjm.com/PJMDataminerApi/swagger/docs/v1 returned HTTP 500
+      with body {"message":"An error has occurred."} — as did the lowercase host
+      path variant and the trailing-slash variant. No machine-readable contract was
+      therefore harvestable. Nothing was fabricated to fill the gap; the openapi/
+      directory is intentionally absent.
+  probes:
+    - url: https://www.pjm.com/
+      status: 200
+    - url: https://apiportal.pjm.com/
+      status: 200
+    - url: https://apiportal.pjm.com/signin
+      status: 200
+    - url: https://apiportal.pjm.com/apis
+      status: 404
+    - url: https://apiportal.pjm.com/api-details
+      status: 404
+    - url: https://apiportal.pjm.com/developer
+      status: 404
+    - url: https://apiportal.pjm.com/config.json
+      status: 200
+    - url: https://api.pjm.com/api/v1/
+      status: 401
+    - url: https://api.pjm.com/api/v1/gen_by_fuel?rowCount=1
+      status: 401
+    - url: https://api.pjm.com/api/v1/instantaneous-dispatch-rates
+      status: 404
+      note: Nonexistent feed name; contrasts with the 401 on real feeds.
+    - url: https://api.pjm.com/api/v1/swagger.json
+      status: 404
+    - url: https://api.pjm.com/api/v1/openapi.json
+      status: 404
+    - url: https://api-train.pjm.com/api/v1/pnode
+      status: 401
+    - url: https://api.pjm.com/.well-known/openid-configuration
+      status: 404
+    - url: https://www.pjm.com/.well-known/openid-configuration
+      status: 200
+      note: Soft 404 — returns the pjm.com HTML page, not a discovery document.
+    - url: https://www.pjm.com/openapi.json
+      status: 404
+    - url: https://www.pjm.com/swagger.json
+      status: 404
+    - url: https://developer.pjm.com/
+      status: 000
+      note: Does not resolve.
+    - url: https://docs.pjm.com/
+      status: 000
+      note: Does not resolve.
+    - url: https://data.pjm.com/
+      status: 000
+      note: Does not resolve.
+    - url: https://dataminer2.pjm.com/
+      status: 200
+    - url: https://dataminer2.pjm.com/list
+      status: 200
+      note: Angular single-page application shell; no anonymous data returned.
+    - url: https://services.pjm.com/PJMDataminerApi
+      status: 200
+    - url: https://services.pjm.com/PJMDataminerApi/swagger
+      status: 200
+    - url: https://services.pjm.com/PJMDataminerApi/swagger/docs/v1
+      status: 500
+    - url: https://services.pjm.com/PJMDataminerApi/api/Ancillary/GetDispatchReserves
+      status: 401
+      note: Endpoint referenced from the public pjm.com markets-and-operations page; still key-gated.
+    - url: https://oasis.pjm.com/
+      status: 302
+      note: Redirects to https://www.pjm.com/markets-and-operations/etools/oasis.aspx (200).
+    - url: https://pjmoasis.pjm.com/OASIS/PJM/INFO.HTM
+      status: 200
+    - url: https://pjmoasis.pjm.com/oasis/PJM/data?TEMPLATE=query_transstatus&VERSION=1.5
+      status: 404
+    - url: https://oasistrain.pjm.com/
+      status: 200
+    - url: https://sso.pjm.com/access/authenticate/
+      status: 405
+      note: POST-only per the Browserless Authentication Guide; 405 confirms it is live.
+    - url: https://ssotrain.pjm.com/
+      status: 200
+    - url: https://insched.pjm.com/inschedule/
+      status: 200
+    - url: https://insched.pjm.com/inschedule/rest/secure/download/csv/contracts
+      status: 200
+      note: Returns the ForgeRock OpenAM sign-in page, not data.
+    - url: https://inschedtrain.pjm.com/
+      status: 200
+    - url: https://edartsso.pjm.com/edart/
+      status: 200
+    - url: https://edartssotrain.pjm.com/edartsso
+      status: 200
+    - url: https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html
+      status: 200
+      note: 482,244 bytes of public eDART XML endpoint documentation.
+    - url: https://emergencyprocedures.pjm.com/ep/pages/dashboard.jsf
+      status: 200
+      note: Anonymous operational dashboard, HTML only, no API.
+    - url: https://www.pjm.com/markets-and-operations/etools/data-miner-2
+      status: 200
+    - url: https://www.pjm.com/markets-and-operations/etools/oasis.aspx
+      status: 200
+    - url: https://www.pjm.com/markets-and-operations/etools/security.aspx
+      status: 200
+    - url: https://www.pjm.com/markets-and-operations/etools/inschedule.aspx
+      status: 200
+    - url: https://www.pjm.com/markets-and-operations/etools/edart.aspx
+      status: 200
+    - url: https://accountmanager.pjm.com/accountmanager/pages/public/new-user.jsf
+      status: 200
+    - url: https://learn.pjm.com/
+      status: 200
+    - url: https://insidelines.pjm.com/
+      status: 202
+    - url: https://pjm.my.site.com/publicknowledge/s/
+      status: 200
+    - url: https://rss.pjm.com/
+      status: 000
+      note: Linked from pjm.com but does not resolve.
+
+sources:
+  - url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+    type: Guide
+    status: 200
+    bytes: 2634674
+    note: >-
+      PJM Data Miner API Guide, PJM (c) 2026. Source for the base URL
+      https://api.pjm.com/api/v1, the Ocp-Apim-Subscription-Key header and
+      subscription-key query parameter, the /{feed}/metadata and /{feed}? query
+      patterns, rowCount/startRow/sort/order/fields/format=csv parameters, the
+      50,000 row page cap, the member (600/min) vs non-member (6/min) connection
+      limits, the registration and approval workflow, the redistribution
+      restriction, and Appendix A mapping feed long names to API short names.
+  - url: https://www.pjm.com/-/media/DotCom/etools/oasis/pjm-oasis-api-user-guide.pdf
+    type: Guide
+    status: 200
+    bytes: 1322297
+    note: >-
+      PJM OASIS API User Guide, Revision 04, effective 2023-01-27. Source for NAESB
+      WEQ-002/WEQ-003 version support, the OASIS template base URLs, GET/POST
+      submission requirements, the PJM Template Catalog / Data Dictionary /
+      Template Builder tooling, the PJM CLI, and the three PJM custom templates.
+  - url: https://www.pjm.com/-/media/DotCom/etools/pjm-browserless-authentication-guide.pdf
+    type: Guide
+    status: 200
+    bytes: 267347
+    note: >-
+      PJM RESTful API for Authentication. Source for the SSO authenticate/logout
+      endpoints, the X-OpenAM-Username / X-OpenAM-Password headers, the tokenId
+      response, the pjmauth / pjmauthtrain cookie, and the documented InSchedule
+      upload and download REST paths.
+  - url: https://www.pjm.com/-/media/DotCom/etools/security/pki-authentication-guide.pdf
+    type: Guide
+    status: 200
+    bytes: 1296372
+    note: PKI-Based Authentication Guide — client-certificate/mTLS requirement for API clients.
+  - url: https://www.pjm.com/-/media/DotCom/etools/edart/dart-browserless-user-guide.pdf
+    type: Guide
+    status: 200
+    bytes: 5689448
+    note: >-
+      eDART Browserless User Guide, version 1.28.0, 2026-07-02. Points at
+      https://edartsso.pjm.com/edart/ and at the public XML endpoint documentation.
+  - url: https://pjmoasis.pjm.com/OASIS/PJM/INFO.HTM
+    type: PublicInformation
+    status: 200
+    note: NAESB WEQ-002-4.5.2 mandated public posting, served anonymously.
+  - url: https://apiportal.pjm.com/
+    type: APIPortal
+    status: 200
+    note: Azure API Management developer portal; catalogue behind sign-in.
+
+actions:
+  apisYmlCreated: true
+  apisListed: 5
+  openapiDirectory: false
+  reason: >-
+    Five real, documented PJM APIs were recorded — Data Miner 2, the OASIS template
+    API, the browserless SSO authentication API, InSchedule and eDART. No OpenAPI,
+    AsyncAPI, Postman or JSON Schema artifact was saved because none could be
+    retrieved: the only machine-readable contract endpoint discovered
+    (services.pjm.com/PJMDataminerApi/swagger/docs/v1) returns HTTP 500. Nothing
+    was invented.
