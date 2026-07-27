@@ -1,0 +1,153 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  PJM Data Miner API Guide (v15, 02/10/2026,
+  https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx),
+  PJM Data Miner FAQs (https://learn.pjm.com/three-priorities/keeping-the-lights-on/data-miner-faqs.aspx),
+  PJM OASIS API User Guide (Rev 04), plus live anonymous probes on 2026-07-27.
+scope: >-
+  Cross-cutting request/response semantics for the PJM API surface. PJM does not
+  publish a single unified API style guide — these conventions are captured per
+  surface from the official PDF guides and from verified live responses. The three
+  surfaces (Data Miner 2 REST over Azure API Management, the NAESB OASIS template
+  interface, and the eTools JAX-RS/browserless interfaces) do not share one
+  convention set, so each is recorded separately.
+authentication:
+  style: api-key-and-session-token
+  detail: see authentication/pjm-authentication.yml
+  summary: >-
+    Data Miner 2 uses an Azure APIM subscription key (Ocp-Apim-Subscription-Key
+    header or subscription-key query parameter). eTools/OASIS use a ForgeRock OpenAM
+    pjmauth session cookie, optionally over a PKI client certificate. The Messages
+    public web service is anonymous.
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    PJM publishes no idempotency key contract. The public surfaces documented here
+    are read-only (HTTP GET); the write surfaces (InSchedule CSV upload, eDART
+    ticket submission, OASIS input templates) are member-only and their guides
+    document no idempotency key, request-replay window or dedupe semantics. Recorded
+    as absent rather than assumed — no Idempotency pointer is emitted.
+pagination:
+  style: offset
+  surface: PJM Data Miner 2 API
+  params:
+    limit: rowCount
+    offset: startRow
+  offset_base: 1
+  max_page_size: 50000
+  required: >-
+    Both rowCount and startRow are required whenever any other query parameter is
+    specified.
+  total_count:
+    body_field: TotalRows
+    header: X-TotalRows
+    note: >-
+      The total row count is echoed in the response body as TotalRows, or moved into
+      the X-TotalRows response header when download=true.
+  next_page: >-
+    The response body carries a Links element with the URL for the next set of
+    results. PJM's documented loop is startRow = startRow + rowCount for each
+    subsequent fetch.
+  source: PJM Data Miner API Guide sections III.A and IV.A
+filtering:
+  field_selection:
+    param: fields
+    format: CSV list of field names (per-feed allowed values published in the guide)
+  multi_value: 'Semicolon-separated values, e.g. pnode_id=1;3;48579'
+  date_range:
+    format: mm-dd-yyyy to mm-dd-yyyy
+    fields: [datetime_beginning_ept, datetime_beginning_utc]
+    max_span_days: 366
+    required: >-
+      A datetime filter is mandatory on the three archived feeds (rt_hrl_lmps,
+      da_hrl_lmps, rt_fivemin_hrl_lmps); omitting it returns a validation error.
+  encoding_note: "The '&' character inside an allowed filter value must be percent-encoded as %26 (e.g. BG&E/MIDATL becomes BG%26E/MIDATL)."
+  versioning_of_rows:
+    param: row_is_current
+    values: ['true', 'false', all]
+    note: LMP data is versioned; version_nbr carries the row version number.
+sorting:
+  params:
+    sort: sort
+    order: order
+  order_values: [asc, desc]
+  default_order: asc
+  guidance: >-
+    PJM advises sorting on the same field the filter is applied to (EPT with EPT, UTC
+    with UTC) for performance, and filtering on pnode_id rather than pnode name.
+content_negotiation:
+  data_miner:
+    default: application/json
+    alternatives: [csv, xml]
+    param: 'format=csv'
+    download_mode:
+      param: 'download=true'
+      effects:
+      - Only results are returned; Links, SearchSpecification and TotalRows move to response headers.
+      - A Content-Disposition header is added, triggering a browser save prompt.
+      - rowCount becomes optional (a maximum row threshold still applies; crossing it returns HTTP 400).
+      - Response is normally gzip encoded — clients must inspect Content-Encoding, because a 2025-09-09 security change stopped some responses being gzipped.
+  messages_public:
+    default: application/xml
+    alternatives: [application/json]
+    mechanism: Accept header content negotiation
+    verified: 'GET https://messages.pjm.com/messages/rest/public/messages with Accept: application/json returned a JSON body on 2026-07-27; with no Accept header it returned application/xml;charset=UTF-8.'
+  oasis:
+    request_get: 'Content-type: text/plain'
+    request_post: 'Content-type: application/x-www-form-urlencoded'
+    note: NAESB WEQ-002-4.2.4 through 4.2.7 template submission.
+metadata:
+  pattern: '<feed>/metadata'
+  description: >-
+    Every Data Miner feed exposes a companion metadata call that takes no input
+    attributes and returns the feed definition, publication frequency and column
+    descriptions. The three archived feeds add enableArchiving, archiveCutoffDays and
+    enableArchiveFiltering to their metadata response.
+  example: https://api.pjm.com/api/v1/gen_by_fuel/metadata
+request_tracing:
+  request_id_header: null
+  note: No request-id/correlation-id convention is documented on any PJM surface.
+versioning:
+  scheme: uri-path
+  current: v1
+  base: https://api.pjm.com/api/v1
+  release_cadence: >-
+    Feed-level releases named YY.MM (e.g. 25.11), published to the training
+    environment first and then to production, announced monthly at the PJM Tech
+    Change Forum. The /api/v1 path has not been re-versioned across those releases —
+    changes are additive columns, column renames and feed retirements rather than URI
+    version bumps.
+  detail: see lifecycle/pjm-lifecycle.yml and changelog/pjm-changelog.yml
+error_envelope:
+  data_miner:
+    shape: '{"errors": [{"field": "...", "message": "...", "detail": ["..."]}]}'
+    media_type: application/json
+    rfc9457: false
+    detail: see errors/pjm-error-catalog.yml
+  etools_jaxrs:
+    shape: '<errorResponse><errorType>...</errorType><message>...</message></errorResponse>'
+    media_type: application/xml
+    note: >-
+      RESTEasy error document observed on the eTools JAX-RS surface; e.g. GET
+      https://emergencyprocedures.pjm.com/ep/rest/public/procedures returned HTTP 500
+      with errorType javax.ws.rs.NotFoundException on 2026-07-27.
+rate_limit_signaling:
+  headers: []
+  documented_limit: 600 connections per minute per user
+  note: >-
+    PJM publishes the limit in prose but documents no RateLimit/Retry-After response
+    headers and no 429 semantics. See rate-limits/pjm-rate-limits.yml.
+transport:
+  tls_minimum: TLS 1.2
+  http_strictness: >-
+    From 2025-11-01 PJM's security appliance enforces strict HTTP protocol rules;
+    notably an HTTP GET carrying a request body is rejected.
+cross_links:
+  authentication: authentication/pjm-authentication.yml
+  errors: errors/pjm-error-catalog.yml
+  rate_limits: rate-limits/pjm-rate-limits.yml
+  lifecycle: lifecycle/pjm-lifecycle.yml
+  sandbox: sandbox/pjm-sandbox.yml
+  data_model: data-model/pjm-data-model.yml

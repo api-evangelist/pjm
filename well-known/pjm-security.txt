@@ -1,0 +1,6 @@
+Contact: mailto:securityVDP@pjm.com
+Expires: 2027-12-31T05:00:00.000Z
+Preferred-Languages: en
+Canonical: https://www.pjm.com/.well-known/security.txt
+Policy: https://www.pjm.com/VDP/securityVDP-policy.pdf
+

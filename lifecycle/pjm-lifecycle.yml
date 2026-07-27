@@ -1,0 +1,135 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  PJM Data Miner Release Notes
+  (https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx),
+  PJM Upcoming Changes
+  (https://www.pjm.com/markets-and-operations/etools/upcoming-changes), PJM Data
+  Miner API Guide revision history, and the PJM Data Miner FAQs.
+versioning:
+  scheme: uri-path
+  current: v1
+  base: https://api.pjm.com/api/v1
+  release_naming: 'YY.MM (e.g. 25.11, 25.09, 24.12)'
+  release_channel: >-
+    Each release lands in the training environment (api-train.pjm.com) first, then in
+    production, usually days to weeks later.
+  docs: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+  note: >-
+    The /api/v1 URI version has never been bumped. Change is delivered as feed-level
+    additions, column renames and feed retirements inside v1, announced per release.
+    Consumers should treat column sets as additive-but-mutable rather than frozen.
+guide_versioning:
+  document: PJM Data Miner API Guide
+  current_version: '15'
+  effective: '2026-02-10'
+  history_span: Version 00 (2017-03-22) through Version 15 (2026-02-10)
+  url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+deprecation:
+  policy_url: null
+  formal_policy: false
+  sunset_header: false
+  deprecation_header: false
+  mechanism: >-
+    PJM publishes no formal written deprecation or sunset policy and emits no RFC 8594
+    Sunset/Deprecation headers. Retirement is communicated per release, in the Data
+    Miner release notes, with a named effective date, and is presented monthly at the
+    PJM Tech Change Forum. That release-notes page is the de facto deprecation
+    surface and is recorded as such rather than as a published policy.
+  notice_page: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+  forum: https://www.pjm.com/committees-and-groups/forums/tech-change-forum.aspx
+deprecated_feeds:
+- feed: Day-Ahead Scheduling Reserve
+  short_name: null
+  retired_effective: '2022-09-30'
+  release: '22.09'
+  note: No new data posted after September 30, 2022.
+- feed: Non-Synchronized Reserve
+  short_name: null
+  retired_effective: '2022-10-01'
+  release: '22.09'
+  note: >-
+    Corrections to data prior to October 1, 2022 are still posted; no data is posted
+    for days after that date.
+- feed: RTO Synchronized Reserve Preliminary Billing Data
+  short_name: null
+  retired_effective: '2022-10-01'
+  release: '22.09'
+- feed: Settlements Verified Five Minute Ancillary LMPs
+  short_name: null
+  retired_effective: '2022-09-30'
+  release: '22.09'
+- feed: Settlements Verified Hourly Ancillary LMPs
+  short_name: null
+  retired_effective: '2022-09-30'
+  release: '22.09'
+deprecated_columns:
+- feed: Regulation Market Results
+  columns: [RegA hourly mileage, RegD hourly mileage]
+  release: '25.09'
+  note: Columns display NULL values; descriptions updated to reflect their retirement.
+- feed: Regulation Prices
+  columns: [Marginal Benefits Factor]
+  release: '25.09'
+  note: Column removed.
+- feed: Day-Ahead Ancillary Service Market Results
+  columns: [Tier 1 MW]
+  release: '22.10'
+  note: Column removed.
+data_retention:
+  archiving: >-
+    Data older than a per-feed rolling cutoff is moved to an archive tier that
+    supports fewer query options (no custom sort/order, filters limited to dates,
+    type, row_is_current and version_nbr, one calendar year per request).
+  cutoffs:
+  - feed: rt_hrl_lmps
+    archive_cutoff_days: 731
+  - feed: da_hrl_lmps
+    archive_cutoff_days: 731
+  - feed: rt_fivemin_hrl_lmps
+    archive_cutoff_days: 186
+  metadata_flags: [enableArchiving, archiveCutoffDays, enableArchiveFiltering]
+  source: PJM Data Miner API Guide section V
+status_page:
+  url: https://www.pjm.com/markets-and-operations/etools/upcoming-changes
+  kind: planned-maintenance-and-impact notices
+  description: >-
+    PJM's Upcoming Changes page is the operational status surface for the eTools
+    estate: "This page provides a list of planned outages to PJM tools, websites and
+    apps, as well as delayed data or report deadlines." Entries carry the affected
+    tool/website, environment (production or train), date/time window, impacts and
+    actions required.
+  machine_readable: https://messages.pjm.com/messages/rest/public/messages
+  machine_readable_status: 200
+  machine_readable_note: >-
+    The same notice set is served anonymously as a REST web service (XML by default,
+    JSON with Accept: application/json) — verified HTTP 200 on 2026-07-27.
+  email_subscription: https://www.pjm.com/mypjm/newsletters
+  how_to_guide: https://www.pjm.com/-/media/etools/upcoming-changes-how-to-guide.pdf
+  note: >-
+    PJM operates no uptime/incident status page in the Statuspage/Instatus sense —
+    there is no published component health board or historical uptime record.
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No API service-level agreement or uptime commitment is published for Data Miner 2
+    or the eTools browserless interfaces. PJM publishes load-test expectations
+    instead (see rate-limits/pjm-rate-limits.yml) and explicitly states those times
+    "are not a guarantee".
+data_quality:
+  backfill_policy: >-
+    "PJM will attempt to fix or mitigate technical issues that might impede the data
+    refresh process for feeds updated throughout the operating day. However, PJM
+    typically will not update the data to replace the missed intervals. The final
+    data usually becomes available on the next business day through a 'verified'
+    feed for most feeds."
+  source: PJM Data Miner FAQs
+roadmap:
+  url: https://www.pjm.com/committees-and-groups/forums/tech-change-forum.aspx
+  cadence: monthly
+  note: >-
+    "PJM continues to enhance Data Miner by adding new data and migrating data from
+    other sources. The project timeline is presented at the PJM Tech Change Forum each
+    month." (PJM Data Miner FAQs) The forum page carries the meeting materials that
+    constitute the published roadmap.

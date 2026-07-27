@@ -1,0 +1,27 @@
+generated: '2026-07-27'
+method: searched
+source: https://messages.pjm.com/messages/rest/public/messages
+note: >-
+  Verbatim live responses captured anonymously on 2026-07-27. Nothing has been
+  edited, truncated or synthesised. PJM's key-gated surfaces (Data Miner 2, OASIS
+  templates, InSchedule, eDART) return 401/redirect anonymously, so no example
+  payloads exist for them in this repo.
+examples:
+- file: pjm-messages-public-response.json
+  api: PJM Messages Public Web Service
+  request: 'GET https://messages.pjm.com/messages/rest/public/messages'
+  request_headers:
+    Accept: application/json
+  status: 200
+  media_type: application/json
+  captured: '2026-07-27'
+- file: pjm-messages-public-response.xml
+  api: PJM Messages Public Web Service
+  request: 'GET https://messages.pjm.com/messages/rest/public/messages'
+  request_headers: {}
+  status: 200
+  media_type: application/xml;charset=UTF-8
+  captured: '2026-07-27'
+  note: >-
+    Default representation when no Accept header is sent. Root element
+    ns2:messageList in namespace http://esuite.pjm.com/.

@@ -1,0 +1,69 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  PJM Data Miner FAQs
+  (https://learn.pjm.com/three-priorities/keeping-the-lights-on/data-miner-faqs.aspx,
+  "Are there any limitations to using Data Miner?") and the PJM Data Miner API Guide
+  (v15, 02/10/2026) sections IV and V.
+docs: https://learn.pjm.com/three-priorities/keeping-the-lights-on/data-miner-faqs.aspx
+note: >-
+  PJM publishes throttling limits in prose only. No RateLimit-* or Retry-After
+  response headers and no 429 status are documented on any PJM surface, so a client
+  cannot read remaining quota from a response — the limits below must be enforced
+  client-side.
+rate_limits:
+- api: PJM Data Miner 2 API
+  scope: per user
+  limit_count: 600
+  limit_period: minute
+  limit_unit: connections
+  quote: >-
+    User connections may not exceed 600 connections per minute. PJM reserves the
+    right to limit or terminate the access of any user if they are impacting system
+    availability and performance.
+  enforcement: >-
+    Discretionary — PJM states it reserves the right to limit or terminate access of
+    any user impacting system availability and performance.
+  source: PJM Data Miner FAQs
+quotas:
+- api: PJM Data Miner 2 API
+  name: max rows per fetch
+  value: 50000
+  unit: rows
+  note: >-
+    rowCount maximum is 50,000 per request ("The export limits for API – 50K per
+    fetch"). Paging continues with startRow = startRow + rowCount.
+- api: PJM Data Miner 2 API
+  name: maximum standard date range
+  value: 366
+  unit: days
+  note: The date-value range on a standard (non-archived) query must be less than 366 days.
+- api: PJM Data Miner 2 API
+  name: archived date range
+  value: 1
+  unit: calendar year
+  note: Historic/archived queries must start and end within the same UTC calendar year.
+- api: PJM Data Miner 2 API
+  name: download-mode row threshold
+  value: null
+  unit: rows
+  note: >-
+    With download=true, rowCount becomes optional but an unpublished maximum row
+    threshold still applies; crossing it returns HTTP 400.
+performance_guidance:
+  benchmark: >-
+    PJM published load-test figures: 50 simultaneous users downloading the previous
+    day's five-minute LMPs for all pnodes averages 4.5 minutes; 250 simultaneous
+    users averages approximately 12 minutes. These are expectations, not guarantees.
+  tips:
+  - Sort on the same field the filter is applied to (EPT with EPT, UTC with UTC).
+  - Filter on pnode_id rather than pnode name.
+  - Use row_is_current=true to retrieve only the latest LMP version.
+  source: PJM Data Miner FAQs and API Guide section IV
+redistribution:
+  restriction: >-
+    Information and data contained in Data Miner is for internal use only;
+    redistribution of information or data contained in or derived from Data Miner is
+    strictly prohibited without an active PJM Membership. Commercial use, publishing
+    and derivative works require at minimum an Associate Membership.
+  source: PJM Data Miner API Guide section I and PJM Data Miner FAQs

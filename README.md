@@ -159,6 +159,36 @@ The browserless XML-over-HTTP interface to eDART, PJM's Dispatcher Applications 
 - **Access gate:** application-approval — register a PJM Tools account, request Data Miner API access (members) or email `accountmanager@pjm.com` attesting internal-business-only use (non-members), wait for Customer Account Manager approval, then read the subscription key from View Profile.
 - **Auth model:** Azure APIM subscription key (`Ocp-Apim-Subscription-Key`) for Data Miner 2; ForgeRock OpenAM SSO token / `pjmauth` cookie for OASIS, InSchedule and eDART; mTLS client certificate for custom REST clients. No OpenID Connect discovery document is published.
 
+## Artifacts
+
+Enrichment round 2026-07-27. Everything below is either a document fetched from PJM, a
+faithful capture of PJM's own published guides, or an honest derivation from a verified
+live response. Nothing is invented.
+
+- [authentication/pjm-authentication.yml](authentication/pjm-authentication.yml) — every auth scheme across the six surfaces: APIM subscription key (header and query), ForgeRock OpenAM session token, PKI/mTLS, and anonymous.
+- [conventions/pjm-conventions.yml](conventions/pjm-conventions.yml) — paging (`rowCount`/`startRow`, `X-TotalRows`), filtering, content negotiation, error envelopes, versioning. Idempotency is recorded as **absent**.
+- [errors/pjm-error-catalog.yml](errors/pjm-error-catalog.yml) — the seven documented validation errors verbatim, plus every HTTP status observed live.
+- [rate-limits/pjm-rate-limits.yml](rate-limits/pjm-rate-limits.yml) — 600 connections/minute, 50,000 rows/fetch, 366-day range cap, redistribution restriction.
+- [lifecycle/pjm-lifecycle.yml](lifecycle/pjm-lifecycle.yml) — versioning, archive cutoffs (731/186 days), retired feeds and columns, status surface, roadmap. No SLA, no Sunset headers.
+- [changelog/pjm-changelog.yml](changelog/pjm-changelog.yml) — Data Miner releases 22.04 → 25.11, structured, plus the API Guide revision history.
+- [sandbox/pjm-sandbox.yml](sandbox/pjm-sandbox.yml) — the five parallel `*train.pjm.com` environments and the `pjmauthtrain` cookie gotcha.
+- [data-model/pjm-data-model.yml](data-model/pjm-data-model.yml) — 79 Data Miner feed short names and the pnode / aggregate / tie-line entity map.
+- [conformance/pjm-conformance.yml](conformance/pjm-conformance.yml) — NAESB WEQ-002/003, FERC Order 889, TLS 1.2, RFC 9116 — and explicit non-conformance for OAuth2, OIDC, RFC 9457, RFC 8594 and AsyncAPI.
+- [vocabulary/pjm-vocabulary.yml](vocabulary/pjm-vocabulary.yml) — PJM Glossary, the feed dictionary, the eDART XML docs, the 2022 reserve-name crosswalk.
+- [packages/pjm-packages.yml](packages/pjm-packages.yml) — no SDK in any registry, no GitHub org; the Java 11 CLI is the only first-party distributable.
+- [cli/pjm-cli.yml](cli/pjm-cli.yml) — the PJM Command Line Interface for OASIS templates.
+- [well-known/](well-known/) — PJM's real RFC 9116 `security.txt` plus the full probe matrix across six hosts.
+- [security/](security/) — vulnerability disclosure programme (`securityVDP@pjm.com`), TLS/DNS/SPF/DMARC posture.
+- [examples/](examples/) and [json-schema/pjm-message.json](json-schema/pjm-message.json) — verbatim Messages web service responses (JSON and XML) and a schema derived from them.
+- [skills/](skills/) — three packaged agent skills: query a Data Miner feed with paging, watch the tool change notices, authenticate a browserless eTools client.
+- [llms/pjm-llms.txt](llms/pjm-llms.txt) — generated; PJM publishes no `llms.txt`.
+
 ## Notes
 
-No OpenAPI, AsyncAPI, Postman or JSON Schema artifact is stored in this repository. The only machine-readable contract endpoint discovered — the Swashbuckle discovery document at `https://services.pjm.com/PJMDataminerApi/swagger/docs/v1`, declared by the publicly reachable Swagger UI at `https://services.pjm.com/PJMDataminerApi/swagger` — returned HTTP 500 on 2026-07-27. Nothing was generated to fill the gap. See [review.yml](review.yml) for every URL probed and its HTTP status.
+**No OpenAPI, AsyncAPI, GraphQL or Postman artifact is stored in this repository, and none was fabricated.** A real Data Miner spec exists — PJM's API Guide says "The API definition is also available in Swagger and WADL formats" inside the API Management portal — but it cannot be retrieved anonymously. Re-verified 2026-07-27: the Swashbuckle discovery document at `https://services.pjm.com/PJMDataminerApi/swagger/docs/v1` still returns HTTP 500, every alternate Swashbuckle path returns 404, and the Azure APIM developer data plane at `https://apiportal.pjm.com/developer/apis?api-version=2022-04-01-preview` returns `{"value":[],"nextLink":null}` — it answers anonymously but publishes nothing to an unauthenticated caller.
+
+One correction to the first round: PJM **does** operate a fully anonymous public REST API. `GET https://messages.pjm.com/messages/rest/public/messages` returns HTTP 200 with no credential, serving XML by default and JSON under `Accept: application/json`. It is linked as "Web Service" from the Upcoming Changes page and carries planned-outage and impact notices for the PJM tool estate. It is now catalogued as the sixth API here, with a verbatim example capture and a derived JSON Schema.
+
+Also confirmed absent: no official SDK on any package registry, no GitHub organisation, no public Postman collection, no MCP server, no webhooks or event stream, and no uptime status page or SLA.
+
+See [review.yml](review.yml) for every URL probed and its HTTP status.

@@ -1,0 +1,61 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  Registry probes of npm, PyPI, Maven Central, RubyGems, NuGet, crates.io, Packagist
+  and pkg.go.dev, GitHub organisation search, and the PJM eTools download pages, all
+  on 2026-07-27.
+summary:
+  official_sdks: 0
+  official_tools: 1
+  registries_with_first_party_packages: []
+  note: >-
+    PJM ships NO client SDK in any language and publishes nothing to a package
+    registry. It operates no GitHub organisation (github.com/pjm-interconnection ->
+    404; GitHub org search for "PJM Interconnection" -> 0 results). The only
+    first-party distributable is the PJM Command Line Interface, offered as a direct
+    ZIP download. PJM's answer to language coverage is copy-paste code samples in the
+    Data Miner API Guide (cURL, Python, C#, Java, JavaScript, ObjC, PHP, Ruby, VBA
+    and an Excel data connection) plus the generated samples in the Azure API
+    Management developer portal. Because there is no official client library, no
+    `SDKs` pointer is emitted for this provider.
+packages:
+- name: PJM Command Line Interface (Java 11)
+  kind: cli
+  language: java
+  registry: direct-download
+  url: https://www.pjm.com/-/media/DotCom/etools/pjm-command-line-interface-java-11.zip
+  install: Download and unzip; run on a Java 11+ runtime.
+  official: true
+  status: 200
+  bytes: 22942065
+  covers: PJM OASIS Template API
+  detail: cli/pjm-cli.yml
+code_samples:
+  source: PJM Data Miner API Guide (v15) section VII
+  url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+  languages: [curl, python, csharp, java, javascript, objc, php, ruby, vba, excel-data-connection]
+  note: >-
+    Section VII of the guide carries full paging implementations in Python and C#;
+    the API portal's "Try it" console generates the remaining languages after sign-in.
+community:
+  note: >-
+    Third-party, NOT published or endorsed by PJM. Recorded for discovery only —
+    official is false for every entry.
+  packages:
+  - name: gridstatus
+    language: python
+    registry: pypi
+    url: https://pypi.org/project/gridstatus/
+    source_code: https://github.com/gridstatus/gridstatus
+    install: pip install gridstatus
+    official: false
+    note: >-
+      Multi-ISO client (PJM among CAISO, ERCOT, MISO, NYISO, SPP and others) that
+      wraps the Data Miner 2 API; still requires the consumer's own PJM subscription
+      key.
+  - name: rzwink/pjm_dataminer
+    language: python
+    registry: github
+    url: https://github.com/rzwink/pjm_dataminer
+    official: false
+    note: PJM-specific Data Miner export scripts for warehouse loading.

@@ -1,0 +1,67 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  https://www.pjm.com/glossary (PJM Glossary, HTTP 200, ~565 KB on 2026-07-27), PJM
+  Data Miner API Guide (v15) Appendix A, PJM Data Miner FAQs, and the NAESB WEQ-003
+  OASIS Data Dictionary referenced by PJM's OASIS API User Guide.
+vocabularies:
+- id: pjm-glossary
+  name: PJM Glossary
+  url: https://www.pjm.com/glossary
+  status: 200
+  scope: >-
+    PJM's published, public definitions of the wholesale-market and grid-operations
+    terms used across its tariff, manuals, tools and data feeds (LMP, pnode, zone,
+    capacity, FTR, ARR, synchronized reserve, PAI, and so on).
+  machine_readable: false
+- id: pjm-data-miner-feed-names
+  name: Data Miner feed long-name to short-name mapping
+  url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+  scope: >-
+    PJM's controlled list of Data Miner 2 feed short names — the API path segment for
+    every feed (e.g. da_hrl_lmps, rt_fivemin_hrl_lmps, gen_by_fuel, hrl_load_metered).
+    Captured in full at data-model/pjm-data-model.yml.
+  machine_readable: false
+  terms_count: 68
+- id: pjm-data-miner-attributes
+  name: Data Miner generic and feed-specific attribute vocabulary
+  url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+  scope: >-
+    Section III of the API Guide enumerates 42 date-time attribute names and, per
+    feed, the allowed values for every filterable attribute (tie lines, zones,
+    pnode subtypes, areas, reserve types). This is PJM's de facto data dictionary for
+    the market-data API.
+  machine_readable: false
+- id: naesb-weq-003
+  name: NAESB WEQ-003 OASIS Data Dictionary
+  url: https://www.naesb.org/weq/default.asp
+  scope: >-
+    The industry data dictionary PJM's OASIS node conforms to, at versions 2.0, 2.1,
+    2.2 and 3.3. Not a PJM publication — PJM asserts conformance to it. See
+    conformance/pjm-conformance.yml.
+  machine_readable: false
+- id: pjm-edart-xml
+  name: eDART XML document definitions
+  url: https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html
+  status: 200
+  scope: >-
+    PJM's public XML document definitions for the eDART browserless endpoints —
+    transmission and generator outage tickets, voltage schedules and reliability
+    data. Documentation is public even though the endpoints are participant-only.
+  machine_readable: partial
+  note: HTML documentation of XML documents; no XSD or JSON Schema is published.
+- id: pjm-reserve-name-mapping
+  name: Operational Reserves old-to-new reserve name mapping (2022-10-01)
+  url: https://learn.pjm.com/three-priorities/keeping-the-lights-on/data-miner-faqs.aspx
+  scope: >-
+    PJM's published crosswalk of pre- and post-Reserve Price Formation reserve names
+    (e.g. "RTO Operating Reserves" -> "RTO Operating (30 Min) Reserve Total"),
+    plus the settlement-product mapping (Primary Reserve -> NSRMCP, Thirty Minutes
+    Reserve -> SecRMCP, Synchronized Reserve -> SRMCP). Required to read the
+    operational_reserves feed across the 2022 boundary.
+  machine_readable: false
+note: >-
+  PJM publishes no RDF, SKOS, JSON-LD or OWL vocabulary and no machine-readable
+  glossary export. Every vocabulary above is human-readable HTML or PDF; they are
+  indexed here rather than transcribed, except the feed-name list which is captured
+  verbatim in data-model/pjm-data-model.yml.

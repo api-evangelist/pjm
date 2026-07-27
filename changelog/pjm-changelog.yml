@@ -1,0 +1,130 @@
+generated: '2026-07-27'
+method: searched
+source: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+docs: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+api: PJM Data Miner 2 API
+scheme: 'YY.MM release naming, dated per environment (training release date, then production release date)'
+current: '25.11'
+cadence: >-
+  Irregular; roughly one to four releases a year in recent years. Changes are also
+  presented monthly at the PJM Tech Change Forum.
+note: >-
+  Recent window only — PJM's release-notes page carries the full history back to 2017
+  and remains the source of truth. Sibling eTools (Account Manager, DR Hub, eDART,
+  eGADS, Emergency Procedures, Markets Gateway, MSRS, PJM Now, Planning Center, TO
+  Connection, Voting, PJM Website) each publish their own release-notes page under
+  the same /markets-and-operations/etools/ tree.
+entries:
+- version: '25.11'
+  training_date: '2025-11-19'
+  production_date: '2025-11-19'
+  breaking: false
+  summary: Enhancements to feeds.
+  changes:
+  - 'Daily Generation Capacity: date-conversion defect fixed; data re-loaded from 2012 onward.'
+  - 'Five Minute Marginal Emission Rates and Hourly Marginal Emission Rates: feed descriptions enhanced.'
+  - 'Settlements Verified Hourly LMPs: feed update availability updated.'
+  - 'Day-Ahead Ancillary Services: column descriptions updated.'
+- version: '25.09'
+  training_date: '2025-08-30'
+  production_date: '2025-09-30'
+  breaking: true
+  summary: Column renames and a column removal across two regulation feeds.
+  changes:
+  - 'Regulation Prices: reserve_quantity renamed regulation_quantity; reserve_requirement renamed regulation_requirement; performance_clearing_price renamed mileage_clearing_price; Marginal Benefits Factor column removed.'
+  - 'Regulation Market Results: RegA column naming updated; RegA/RegD hourly mileage columns now return NULL and are documented as retired.'
+- version: '24.12'
+  training_date: '2024-11-16'
+  production_date: '2024-12-17'
+  breaking: false
+  summary: Enhancement to one feed.
+  changes:
+  - 'Synchronized Reserve Events: new column indicating the percentage of total megawatts deployed.'
+- version: '23.12'
+  production_date: '2023-10-26'
+  breaking: false
+  summary: Two new feeds.
+  changes:
+  - 'New feed: Five Minute PAI Intervals — preliminary performance assessment intervals on a five-minute basis.'
+  - 'New feed: Verified Performance Assessment Intervals — final PAI data.'
+- version: '23.10'
+  production_date: '2023-10-26'
+  breaking: false
+  summary: Enhancements to the Instantaneous Load feed.
+  changes:
+  - Timestamps now end on 5s and 0s.
+  - UG zone added.
+  - Feed description enhanced to indicate the region-to-zone summation.
+- version: '23.07'
+  production_date: '2023-07-19'
+  breaking: false
+  summary: Decimal precision reverted to pre-EMS-upgrade values on four feeds.
+  changes:
+  - 'Area Control Error: Area Control Error column precision 2.'
+  - 'Operational Reserves: Reserve MW column precision 2.'
+  - 'Instantaneous Wind Generation: Wind Generation MW column precision 0.'
+  - 'Instantaneous Dispatch Rates: Instantaneous Dispatch Rate column precision 0.'
+- version: '23.02'
+  training_date: '2023-02-08'
+  production_date: '2023-02-16'
+  breaking: true
+  summary: Two new emissions feeds; a mandatory-parameter change on five-minute LMPs.
+  changes:
+  - 'New feed: Hourly Marginal Emission Rates.'
+  - 'New feed: Hourly Total Emissions, broken down by fuel type.'
+  - 'Generation by Fuel Type: generation MW now averaged over the previous 12 intervals within the hour rather than the interval closest to the top of hour.'
+  - 'Real-Time Unverified Five Minute LMPs: the date-time parameter became a MANDATED input for the API call.'
+- version: '22.12'
+  production_date: '2022-12-15'
+  breaking: false
+  summary: New subzone column on two reserve feeds.
+  changes:
+  - New subzone column added to Reserve Subzone Buses and Reserve Subzone Resources.
+- version: '22.11'
+  production_date: '2022-11-17'
+  breaking: false
+  summary: One new feed.
+  changes:
+  - 'New feed: Annual Zonal NSPL — network service peak load MW by transmission zone.'
+- version: '22.10'
+  production_date: '2022-10-20'
+  breaking: true
+  summary: Posting-frequency change and a column removal on the ancillary market results feeds.
+  changes:
+  - 'Real-Time Ancillary Service Market Results: posting frequency moved from monthly to daily (business days, after verification).'
+  - 'Day-Ahead Ancillary Service Market Results: Tier 1 MW column removed.'
+- version: '22.09'
+  training_date: '2022-09-16'
+  production_date: '2022-09-29'
+  breaking: true
+  summary: >-
+    The Reserve Price Formation release — the largest recent change. New feeds, feed
+    retirements, granularity changes and reserve-name changes.
+  changes:
+  - 'reserve_market_results: granularity changed from hourly to five minutes; new subzones added.'
+  - 'New feed da_reserve_market_results (Day-Ahead Ancillary Service Markets results).'
+  - 'New feed da_ancillary_services (Day-Ahead Ancillary Service LMPs).'
+  - 'New feeds sync_pri_reserves_buses_list and sync_pri_reserves_resources_list.'
+  - 'New feeds sync_reserve_prelim_billing, non_sync_reserve_prelim_billing, secondary_nonsync_reserve_prelim_billing.'
+  - 'dispatched_reserves and rt_dispatch_reserves: new reserve types/areas and columns; reserve type names singularised.'
+  - 'RETIRED: Day-Ahead Scheduling Reserve, Non-Synchronized Reserve, RTO Synchronized Reserve Preliminary Billing Data, Settlements Verified Five Minute Ancillary LMPs, Settlements Verified Hourly Ancillary LMPs.'
+- version: '22.04'
+  production_date: '2022-04-28'
+  breaking: true
+  summary: TLS 1.0/1.1 retired for the Data Miner user interface and API; one feed defect fix.
+  changes:
+  - 'Data Miner UI and API stopped supporting TLS 1.0 and TLS 1.1 after this release.'
+  - 'Energy Market Generation Offers: 10 additional bid-segment columns added and data reposted for bid dates 2021-01-05 to 2021-11-30.'
+guide_revisions:
+- version: '15'
+  date: '2026-02-10'
+  summary: Updated non-member access request instructions; updated security requirements in section IV(J).
+- version: '14'
+  date: '2025-09-26'
+  summary: Newer code samples and updates covering the new security tooling protecting Data Miner 2.
+- version: '13'
+  date: '2023-09-22'
+  summary: Updated screen captures and account-creation steps for the API portal redesign.
+- version: '12'
+  date: '2020-07-15'
+  summary: Dropped "2" from "Data Miner 2"; added archived-data information.

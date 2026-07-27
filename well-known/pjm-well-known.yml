@@ -1,0 +1,105 @@
+generated: '2026-07-27'
+method: searched
+source: https://www.pjm.com/.well-known/security.txt
+note: >-
+  Every /.well-known/ path below was probed anonymously on 2026-07-27. www.pjm.com
+  is a soft-404 site — it answers HTTP 200 for unknown paths with a "Page Not Found"
+  HTML shell (~24.8 KB), so a 200 was only accepted as a real document when the body
+  parsed as the expected format. Only /.well-known/security.txt on www.pjm.com is a
+  genuine well-known document; the OIDC, OAuth authorization-server and api-catalog
+  paths returned the HTML shell and are recorded as soft 404s.
+hosts:
+- host: https://www.pjm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    real: true
+    format: RFC 9116
+    file: pjm-security.txt
+  - path: /.well-known/openid-configuration
+    status: 200
+    real: false
+    note: Soft 404 — returns the pjm.com HTML shell, not a discovery document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    real: false
+    note: Soft 404 — returns the pjm.com HTML shell, not RFC 8414 metadata.
+  - path: /.well-known/api-catalog
+    status: 200
+    real: false
+    note: Soft 404 — returns the pjm.com HTML shell, not RFC 9727 api-catalog.
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    real: false
+- host: https://api.pjm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://apiportal.pjm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://pjmoasis.pjm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://sso.pjm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+    note: >-
+      The PJM single sign-on service is ForgeRock OpenAM but publishes no anonymous
+      OpenID Connect discovery document.
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://services.pjm.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+security_txt:
+  file: pjm-security.txt
+  url: https://www.pjm.com/.well-known/security.txt
+  contact: mailto:securityVDP@pjm.com
+  expires: '2027-12-31T05:00:00.000Z'
+  preferred_languages: en
+  canonical: https://www.pjm.com/.well-known/security.txt
+  policy: https://www.pjm.com/VDP/securityVDP-policy.pdf
+  policy_status: 200

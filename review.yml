@@ -100,6 +100,13 @@ mandate:
       https://emergencyprocedures.pjm.com/ep/pages/dashboard.jsf (HTTP 200, HTML,
       not an API). Contrast with EIA, which serves comparable US energy data
       anonymously — PJM does not.
+      AMENDED 2026-07-27 (enrichment round 2): one anonymous PJM REST API was
+      subsequently found — the Messages public web service at
+      https://messages.pjm.com/messages/rest/public/messages (HTTP 200 with no
+      credential, application/xml by default and JSON under Accept:
+      application/json), linked as "Web Service" from the PJM Upcoming Changes page.
+      It carries operational change/outage notices for the PJM tool estate, not
+      market data, so the market-data finding above stands unchanged.
 
   accessGate: application-approval
   accessGateSteps: >-
@@ -188,6 +195,20 @@ findings:
       path variant and the trailing-slash variant. No machine-readable contract was
       therefore harvestable. Nothing was fabricated to fill the gap; the openapi/
       directory is intentionally absent.
+    round2Confirmation: >-
+      Re-run 2026-07-27 (enrichment round 2). The Swashbuckle discovery path still
+      returns HTTP 500 across every case and trailing-slash variant, and the
+      alternate Swashbuckle paths (swagger/docs/V1, swagger/docs/v2,
+      swagger/docs/1.0, swagger.json, api-docs) all return 404. The decisive new
+      evidence is the Azure API Management developer-portal data plane: GET
+      https://apiportal.pjm.com/developer/apis?api-version=2022-04-01-preview and
+      .../developer/products?api-version=2022-04-01-preview both return HTTP 200
+      with {"value":[],"nextLink":null} — the endpoint works anonymously but PJM
+      publishes no API to unauthenticated callers. PJM's own guide confirms a spec
+      exists ("The API definition is also available in Swagger and WADL formats
+      located in API definition drop down menu") behind sign-in. Conclusion: a real
+      OpenAPI exists and is not anonymously retrievable. No GraphQL surface and no
+      MCP server were found on any PJM host.
   probes:
     - url: https://www.pjm.com/
       status: 200

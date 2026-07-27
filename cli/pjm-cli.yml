@@ -1,0 +1,55 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  PJM OASIS API User Guide (Rev 04, effective 2023-01-27) and
+  https://www.pjm.com/markets-and-operations/etools/oasis.aspx
+name: PJM Command Line Interface
+official: true
+vendor: PJM Interconnection
+purpose: >-
+  First-party Java command line client for submitting and retrieving NAESB WEQ OASIS
+  templates against the PJM OASIS node without a browser session. It is PJM's
+  documented alternative to hand-rolling the SSO handshake plus template POST.
+download:
+  url: https://www.pjm.com/-/media/DotCom/etools/pjm-command-line-interface-java-11.zip
+  status: 200
+  content_type: application/x-zip-compressed
+  bytes: 22942065
+  verified: '2026-07-27'
+  distribution: direct ZIP download from pjm.com (not published to any package registry)
+runtime:
+  language: java
+  requires: Java 11 or later (the distribution is named pjm-command-line-interface-java-11)
+install:
+- method: download-zip
+  command: Download and unzip pjm-command-line-interface-java-11.zip from pjm.com; run with a Java 11+ runtime.
+registries:
+  npm: null
+  pypi: null
+  maven_central: null
+  homebrew: null
+  note: >-
+    Probed on 2026-07-27 — PJM publishes no CLI or SDK package to npm, PyPI, Maven
+    Central, RubyGems, NuGet, crates.io, Packagist or pkg.go.dev, and operates no
+    GitHub organisation (github.com/pjm-interconnection returns 404 and the GitHub
+    org search for "PJM Interconnection" returns zero results).
+capabilities:
+- Authenticate to PJM with a PJM Tools credential and obtain the SSO session used by OASIS.
+- Submit NAESB WEQ-002 query/response and input/response templates.
+- Retrieve template responses for scripted/scheduled use.
+- Exercise the three PJM custom templates (pjmannulment, pjmtransreq, pjmtsrcomment).
+surfaces:
+- api: PJM OASIS Template API
+  base_url: https://pjmoasis.pjm.com/OASIS/PJM/data/
+  training_base_url: https://oasistrain.pjm.com/OASIS/PJM/data/
+docs:
+- title: PJM OASIS API User Guide
+  url: https://www.pjm.com/-/media/DotCom/etools/oasis/pjm-oasis-api-user-guide.pdf
+- title: PJM OASIS eTool page
+  url: https://www.pjm.com/markets-and-operations/etools/oasis.aspx
+note: >-
+  The command surface (exact flags and subcommands) is documented inside the OASIS
+  API User Guide PDF and inside the distributed ZIP; it is not published as a
+  standalone reference page, so no command tree is transcribed here rather than
+  guessed. There is no first-party CLI for Data Miner 2 — that surface is driven with
+  plain HTTP plus the subscription key.

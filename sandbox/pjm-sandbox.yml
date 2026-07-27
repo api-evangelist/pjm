@@ -1,0 +1,80 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  PJM Data Miner API Guide (v15, section VII notes), PJM Browserless Authentication
+  Guide, PJM OASIS API User Guide (Rev 04), PJM eDART Browserless User Guide, plus
+  live probes on 2026-07-27.
+model: parallel-training-environment
+summary: >-
+  PJM does not use test-vs-live key prefixes or magic test values. Instead it runs a
+  full parallel "train" copy of each eTools application on its own hostname, and each
+  release is deployed to train before production. Training access uses the same PJM
+  Tools credential model as production — a train subscription key or a pjmauthtrain
+  session — so the sandbox is gated exactly like production. There are no published
+  anonymous test credentials.
+environments:
+- name: production
+  api: PJM Data Miner 2 API
+  base_url: https://api.pjm.com/api/v1
+  status: 401
+- name: training
+  api: PJM Data Miner 2 API
+  base_url: https://api-train.pjm.com/api/v1
+  status: 401
+  quote: 'https://api-train.pjm.com refers to our training environment.'
+  source: PJM Data Miner API Guide section VII
+- name: production
+  api: PJM OASIS Template API
+  base_url: https://pjmoasis.pjm.com/OASIS/PJM/data/
+- name: training
+  api: PJM OASIS Template API
+  base_url: https://oasistrain.pjm.com/OASIS/PJM/data/
+  human_url: https://oasistrain.pjm.com/
+  status: 200
+  source: PJM OASIS API User Guide Rev 04
+- name: production
+  api: PJM Browserless Authentication API
+  base_url: https://sso.pjm.com/access
+- name: training
+  api: PJM Browserless Authentication API
+  human_url: https://ssotrain.pjm.com/
+  status: 200
+  session_cookie: pjmauthtrain
+  note: >-
+    The training session cookie is named pjmauthtrain rather than pjmauth — clients
+    must switch cookie names, not just hostnames, when pointing at train.
+  source: PJM Browserless Authentication Guide
+- name: training
+  api: PJM InSchedule Browserless API
+  human_url: https://inschedtrain.pjm.com/
+  status: 200
+- name: training
+  api: PJM eDART Browserless API
+  human_url: https://edartssotrain.pjm.com/edartsso
+  status: 200
+  also: eDART Sandbox is listed separately in the PJM Tools navigation.
+test_values:
+  published: false
+  note: >-
+    No test card numbers, magic identifiers, seeded accounts or fixture tooling are
+    published — this is a market-data and grid-operations surface, not a payments
+    one. Training environments carry PJM-loaded non-production market data, and PJM
+    documents them for integration rehearsal rather than for deterministic fixtures.
+console:
+  data_miner_ui: https://dataminer2.pjm.com/list
+  data_miner_ui_status: 200
+  data_miner_ui_note: >-
+    The Data Miner 2 user interface is browsable anonymously and exposes every feed's
+    definition, columns and publication frequency, which makes it the practical
+    no-credential way to explore the catalogue before requesting a key.
+  api_portal_try_it: https://apiportal.pjm.com/
+  api_portal_note: >-
+    The Azure API Management developer portal provides a "Try it" console and
+    generated code samples (cURL, C#, Java, JavaScript, ObjC, PHP, Python, Ruby), but
+    only after sign-in — anonymous GET of /developer/apis?api-version=2022-04-01-preview
+    returns an empty value[] array.
+release_flow: >-
+  Data Miner releases publish a training release date and a production release date
+  separately (e.g. release 25.09 landed on train 2025-08-30 and in production
+  2025-09-30), giving integrators a documented window to test against train before a
+  change reaches production.

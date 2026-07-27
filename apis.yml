@@ -19,8 +19,12 @@ description: >-
   Manager. Its one genuinely mandated interface is the FERC Order 889 / NAESB WEQ
   OASIS node, which is verifiably live and standards-conformant at
   https://pjmoasis.pjm.com, though template submission also requires an
-  authenticated PJM SSO session.
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  authenticated PJM SSO session. One genuinely anonymous PJM REST API does exist and
+  is easy to miss: the Messages public web service at
+  https://messages.pjm.com/messages/rest/public/messages, linked as "Web Service" from
+  the Upcoming Changes page, returns the planned-outage and impact notices for the
+  whole PJM tool estate with no credential, in XML or JSON.
+image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
 tags:
 - Energy
 - United States
@@ -52,7 +56,7 @@ apis:
     — and redistribution requires at minimum a PJM Associate Membership.
   humanURL: https://www.pjm.com/markets-and-operations/etools/data-miner-2
   baseURL: https://api.pjm.com/api/v1
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - Market Data
   - Electricity
@@ -73,6 +77,61 @@ apis:
     url: https://dataminer2.pjm.com/list
   - type: SignUp
     url: https://accountmanager.pjm.com/accountmanager/pages/public/new-user.jsf
+  - type: APIReference
+    url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+  - type: GettingStarted
+    url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-getting-started-guide.pdf
+  - type: ChangeLog
+    url: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+  - type: FAQ
+    url: https://learn.pjm.com/three-priorities/keeping-the-lights-on/data-miner-faqs.aspx
+  - type: RateLimits
+    url: rate-limits/pjm-rate-limits.yml
+  - type: Conventions
+    url: conventions/pjm-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pjm-error-catalog.yml
+  - type: DataModel
+    url: data-model/pjm-data-model.yml
+  - type: Sandbox
+    url: https://api-train.pjm.com/api/v1
+  - type: AgentSkill
+    url: skills/pjm-query-data-miner-feed.md
+- aid: pjm:pjm-messages-public-api
+  name: PJM Messages Public Web Service
+  description: >-
+    The only fully anonymous PJM REST API found on the public surface. It backs the
+    PJM Upcoming Changes page and returns the current planned-outage, delayed-data and
+    impact notices for the whole PJM eTools estate — affected applications by name and
+    numeric id, the change window as epoch milliseconds, required actions, and an
+    access-blocking flag. GET https://messages.pjm.com/messages/rest/public/messages
+    returned HTTP 200 with no credential on 2026-07-27, serving
+    application/xml;charset=UTF-8 by default and JSON under Accept: application/json.
+    There are no documented query parameters, no paging and no filtering — it returns
+    the current notice set as one small document. It is poll-only; PJM registers no
+    webhooks, and the alternative subscription channel is email.
+  humanURL: https://www.pjm.com/markets-and-operations/etools/upcoming-changes
+  baseURL: https://messages.pjm.com/messages/rest/public
+  image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
+  tags:
+  - Status
+  - Notifications
+  - Planned Outages
+  - Grid Operations
+  - Open Access
+  properties:
+  - type: Documentation
+    url: https://www.pjm.com/markets-and-operations/etools/upcoming-changes
+  - type: Guide
+    url: https://www.pjm.com/-/media/etools/upcoming-changes-how-to-guide.pdf
+  - type: JSONSchema
+    url: json-schema/pjm-message.json
+  - type: Examples
+    url: examples/_index.yml
+  - type: AgentSkill
+    url: skills/pjm-watch-tool-change-notices.md
+  - type: StatusPage
+    url: https://www.pjm.com/markets-and-operations/etools/upcoming-changes
 - aid: pjm:pjm-oasis-template-api
   name: PJM OASIS Template API
   description: >-
@@ -89,7 +148,7 @@ apis:
     token or the PJM Command Line Interface tool.
   humanURL: https://www.pjm.com/markets-and-operations/etools/oasis.aspx
   baseURL: https://pjmoasis.pjm.com/OASIS/PJM/data/
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - OASIS
   - Transmission
@@ -109,6 +168,8 @@ apis:
     url: https://www.pjm.com/-/media/DotCom/etools/pjm-command-line-interface-java-11.zip
   - type: Standard
     url: https://www.naesb.org/weq/default.asp
+  - type: Conformance
+    url: conformance/pjm-conformance.yml
 - aid: pjm:pjm-browserless-authentication-api
   name: PJM Browserless Authentication API
   description: >-
@@ -124,7 +185,7 @@ apis:
     documented POST-only endpoint.
   humanURL: https://www.pjm.com/markets-and-operations/etools/security.aspx
   baseURL: https://sso.pjm.com/access
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - Authentication
   - Single Sign-On
@@ -139,6 +200,10 @@ apis:
     url: https://www.pjm.com/-/media/DotCom/etools/security/pki-authentication-guide.pdf
   - type: Sandbox
     url: https://ssotrain.pjm.com/
+  - type: Authentication
+    url: authentication/pjm-authentication.yml
+  - type: AgentSkill
+    url: skills/pjm-authenticate-browserless-etools.md
 - aid: pjm:pjm-inschedule-api
   name: PJM InSchedule Browserless API
   description: >-
@@ -153,7 +218,7 @@ apis:
     a member/participant surface, not an open data API.
   humanURL: https://www.pjm.com/markets-and-operations/etools/inschedule.aspx
   baseURL: https://insched.pjm.com/inschedule/rest
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - Scheduling
   - Bilateral Transactions
@@ -164,6 +229,10 @@ apis:
     url: https://www.pjm.com/-/media/DotCom/etools/pjm-browserless-authentication-guide.pdf
   - type: Sandbox
     url: https://inschedtrain.pjm.com/
+  - type: Documentation
+    url: https://www.pjm.com/markets-and-operations/etools/inschedule.aspx
+  - type: Authentication
+    url: authentication/pjm-authentication.yml
 - aid: pjm:pjm-edart-api
   name: PJM eDART Browserless API
   description: >-
@@ -178,7 +247,7 @@ apis:
     is participant-only.
   humanURL: https://www.pjm.com/markets-and-operations/etools/edart.aspx
   baseURL: https://edartsso.pjm.com/edart/
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+  image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - Outages
   - Reliability
@@ -192,7 +261,13 @@ apis:
     url: https://www.pjm.com/-/media/DotCom/etools/edart/dart-browserless-user-guide.pdf
   - type: Sandbox
     url: https://edartssotrain.pjm.com/edartsso
+  - type: Vocabulary
+    url: https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html
 common:
+- type: VulnerabilityDisclosure
+  url: security/pjm-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/pjm-domain-security.yml
 - type: Website
   url: https://www.pjm.com/
 - type: APIPortal
@@ -215,6 +290,71 @@ common:
   url: https://www.linkedin.com/company/pjm-interconnection
 - type: Legal
   url: https://www.pjm.com/about-pjm/legal
+- type: DeveloperPortal
+  url: https://apiportal.pjm.com/
+- type: APIReference
+  url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-api-guide.ashx
+- type: GettingStarted
+  url: https://www.pjm.com/-/media/DotCom/etools/data-miner-2/data-miner-2-getting-started-guide.pdf
+- type: FAQ
+  url: https://learn.pjm.com/three-priorities/keeping-the-lights-on/data-miner-faqs.aspx
+- type: ChangeLog
+  url: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+- type: ChangeLog
+  name: PJM Data Miner 2 structured changelog
+  url: changelog/pjm-changelog.yml
+- type: StatusPage
+  url: https://www.pjm.com/markets-and-operations/etools/upcoming-changes
+- type: Deprecation
+  name: Data Miner feed retirement notices
+  url: https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+- type: Roadmap
+  name: PJM Tech Change Forum
+  url: https://www.pjm.com/committees-and-groups/forums/tech-change-forum.aspx
+- type: Lifecycle
+  url: lifecycle/pjm-lifecycle.yml
+- type: Authentication
+  name: PJM authentication profile
+  url: authentication/pjm-authentication.yml
+- type: Conventions
+  url: conventions/pjm-conventions.yml
+- type: ErrorCatalog
+  url: errors/pjm-error-catalog.yml
+- type: RateLimits
+  url: rate-limits/pjm-rate-limits.yml
+- type: Sandbox
+  url: sandbox/pjm-sandbox.yml
+- type: CLI
+  url: cli/pjm-cli.yml
+- type: Packages
+  url: packages/pjm-packages.yml
+- type: Conformance
+  url: conformance/pjm-conformance.yml
+- type: DataModel
+  url: data-model/pjm-data-model.yml
+- type: Vocabulary
+  url: vocabulary/pjm-vocabulary.yml
+- type: Examples
+  url: examples/_index.yml
+- type: JSONSchema
+  url: json-schema/pjm-message.json
+- type: WellKnown
+  url: well-known/pjm-well-known.yml
+- type: SecurityTxt
+  url: well-known/pjm-security.txt
+- type: LLMsTxt
+  url: llms/pjm-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Pricing
+  name: PJM membership enrollment (fees for commercial data rights)
+  url: https://www.pjm.com/about-pjm/member-services/membership-enrollment
+- type: TermsOfService
+  url: https://www.pjm.com/about-pjm/legal
+- type: PrivacyPolicy
+  url: https://www.pjm.com/-/media/DotCom/about-pjm/privacy-policy-and-notice.pdf
+- type: Glossary
+  url: https://www.pjm.com/glossary
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com

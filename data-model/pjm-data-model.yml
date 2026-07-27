@@ -1,0 +1,464 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  PJM Data Miner API Guide (v15, 02/10/2026) Appendix A "Feed Long names to short
+  names mapping" and section III "API Attribute descriptions", plus the Data Miner
+  release notes for feeds added after Appendix A was last refreshed.
+api: PJM Data Miner 2 API
+base_url: https://api.pjm.com/api/v1
+note: >-
+  PJM publishes no OpenAPI that can be retrieved anonymously, so this entity map is
+  derived from the official PDF guide rather than from a spec. Every feed short name
+  below is quoted verbatim from PJM's own mapping table; the `domain` grouping is an
+  API Evangelist heuristic and is NOT published by PJM. Each feed is addressed as
+  GET /api/v1/{feed} for data and GET /api/v1/{feed}/metadata for its definition,
+  columns and publication frequency.
+access_pattern:
+  data: 'GET /api/v1/{feed}?rowCount=&startRow=&datetime_beginning_ept=&fields=&sort=&order='
+  metadata: 'GET /api/v1/{feed}/metadata'
+  auth: Ocp-Apim-Subscription-Key header or subscription-key query parameter (see authentication/pjm-authentication.yml)
+entities:
+- name: pnode
+  description: >-
+    Pricing node — the atomic location entity of the PJM market. Every LMP row is
+    keyed to a pnode. The Pricing Nodes feed carries pnode_id, pnode_name,
+    pnode_type, pnode_subtype, zone, voltage, effective_date and terminate_date.
+  feed: Pnode
+  id_field: pnode_id
+- name: aggregate pnode
+  description: >-
+    Fixed weighted-average aggregate definitions — hubs, zones and other aggregates
+    built from constituent pnodes.
+  feed: agg_definitions
+  id_field: agg_pnode_id
+- name: tie line
+  description: Interchange tie lines between PJM and neighbouring balancing authorities.
+  feed: act_sch_interchange
+  id_field: tie_line
+- name: zone / area
+  description: >-
+    Transmission zone and region identifiers used as filters across load, generation
+    and billing feeds (e.g. MIDATL, RTO, WESTERN_REGION, SOUTHERN_REGION, and
+    utility-scoped values such as BG&E/MIDATL, PSE&G/MIDATL).
+  id_field: zone
+relationships:
+- from: LMP feeds (da_hrl_lmps, rt_hrl_lmps, rt_fivemin_hrl_lmps, rt_da_monthly_lmps, rt_fivemin_mnt_lmps)
+  to: pnode
+  kind: belongs_to
+  via: pnode_id
+  evidence: >-
+    The guide's documented two-call pattern resolves pnode ids from the Pnode feed
+    (filtered by zone and pnode_subtype) and feeds them into the LMP query, because
+    zone filters are disabled on five-minute LMPs for volume reasons.
+- from: agg_definitions
+  to: pnode
+  kind: has_many
+  via: agg_pnode_id
+- from: mnt_ftr_zonal_lmps
+  to: pnode
+  kind: belongs_to
+  via: pnode_id
+- from: ftr_cong_lmp
+  to: pnode
+  kind: belongs_to
+  via: pnode_id
+- from: act_sch_interchange
+  to: tie line
+  kind: belongs_to
+  via: tie_line
+- from: load and generation feeds
+  to: zone / area
+  kind: belongs_to
+  via: area
+versioned_rows:
+  applies_to: LMP feeds
+  fields: [row_is_current, version_nbr]
+  description: >-
+    LMP rows are versioned. row_is_current=true returns only the latest version,
+    false returns older versions, all returns every version; version_nbr carries the
+    version number of the row.
+time_keys:
+  description: >-
+    Almost every feed is keyed on a paired UTC/EPT timestamp. The guide lists 42
+    date-time attribute names, of which the most common are:
+  common: [datetime_beginning_utc, datetime_beginning_ept, datetime_ending_utc, datetime_ending_ept]
+feed_count_appendix_a: 68
+feeds:
+- name: Actual/Schedule Summary Report
+  feed: act_sch_interchange
+  path: /api/v1/act_sch_interchange
+  metadata_path: /api/v1/act_sch_interchange/metadata
+  domain: other
+- name: Ancillary Service LMPs
+  feed: ancillary_services
+  path: /api/v1/ancillary_services
+  metadata_path: /api/v1/ancillary_services/metadata
+  domain: pricing
+- name: Ancillary Services Five Minute LMPs
+  feed: ancillary_services_fivemin_hrl
+  path: /api/v1/ancillary_services_fivemin_hrl
+  metadata_path: /api/v1/ancillary_services_fivemin_hrl/metadata
+  domain: pricing
+- name: Ancillary Service Market Results
+  feed: reserve_market_results
+  path: /api/v1/reserve_market_results
+  metadata_path: /api/v1/reserve_market_results/metadata
+  domain: ancillary-services
+- name: Balancing Transmission Congestion Preliminary Billing Data
+  feed: bal_trns_cong_prelim_billing
+  path: /api/v1/bal_trns_cong_prelim_billing
+  metadata_path: /api/v1/bal_trns_cong_prelim_billing/metadata
+  domain: settlements
+- name: Daily Cleared INCs, DECs and UTCs
+  feed: day_inc_dec_utc
+  path: /api/v1/day_inc_dec_utc
+  metadata_path: /api/v1/day_inc_dec_utc/metadata
+  domain: market-offers
+- name: Daily Generation Capacity
+  feed: day_gen_capacity
+  path: /api/v1/day_gen_capacity
+  metadata_path: /api/v1/day_gen_capacity/metadata
+  domain: generation
+- name: Daily Uplift by Zone
+  feed: uplift_by_zone
+  path: /api/v1/uplift_by_zone
+  metadata_path: /api/v1/uplift_by_zone/metadata
+  domain: settlements
+- name: Day Ahead Interface Flows and Limits
+  feed: da_interface_flows_and_limits
+  path: /api/v1/da_interface_flows_and_limits
+  metadata_path: /api/v1/da_interface_flows_and_limits/metadata
+  domain: transmission
+- name: Day-Ahead Hourly LMPs
+  feed: da_hrl_lmps
+  path: /api/v1/da_hrl_lmps
+  metadata_path: /api/v1/da_hrl_lmps/metadata
+  domain: pricing
+- name: Day-Ahead Marginal Value
+  feed: da_marginal_value
+  path: /api/v1/da_marginal_value
+  metadata_path: /api/v1/da_marginal_value/metadata
+  domain: pricing
+- name: Day-Ahead Scheduling Reserve
+  feed: dasr_results
+  path: /api/v1/dasr_results
+  metadata_path: /api/v1/dasr_results/metadata
+  domain: ancillary-services
+- name: Day-Ahead Transmission Constraints
+  feed: da_transconstraints
+  path: /api/v1/da_transconstraints
+  metadata_path: /api/v1/da_transconstraints/metadata
+  domain: transmission
+- name: Day-Ahead Temperature Sets
+  feed: da_tempset
+  path: /api/v1/da_tempset
+  metadata_path: /api/v1/da_tempset/metadata
+  domain: load
+- name: Energy Market Generation Offers
+  feed: energy_market_offers
+  path: /api/v1/energy_market_offers
+  metadata_path: /api/v1/energy_market_offers/metadata
+  domain: generation
+- name: Equivalent Forced Outage Rates – Monthly
+  feed: mnt_efor
+  path: /api/v1/mnt_efor
+  metadata_path: /api/v1/mnt_efor/metadata
+  domain: outages
+- name: Five Minute Load Forecast
+  feed: very_short_load_frcst
+  path: /api/v1/very_short_load_frcst
+  metadata_path: /api/v1/very_short_load_frcst/metadata
+  domain: load
+- name: Fixed Weighted Average Aggregate Definitions
+  feed: agg_definitions
+  path: /api/v1/agg_definitions
+  metadata_path: /api/v1/agg_definitions/metadata
+  domain: other
+- name: Forecasted Generation Outages
+  feed: frcstd_gen_outages
+  path: /api/v1/frcstd_gen_outages
+  metadata_path: /api/v1/frcstd_gen_outages/metadata
+  domain: outages
+- name: FTR Auction Bids – Annual
+  feed: ftr_bids_annual
+  path: /api/v1/ftr_bids_annual
+  metadata_path: /api/v1/ftr_bids_annual/metadata
+  domain: ftr
+- name: FTR Auction Bids - Long-Term Auction
+  feed: ftr_bids_long_term
+  path: /api/v1/ftr_bids_long_term
+  metadata_path: /api/v1/ftr_bids_long_term/metadata
+  domain: ftr
+- name: FTR Auction Bids – Monthly
+  feed: ftr_bids_mnt
+  path: /api/v1/ftr_bids_mnt
+  metadata_path: /api/v1/ftr_bids_mnt/metadata
+  domain: ftr
+- name: FTR Credit Calculator Congestion LMPs
+  feed: ftr_cong_lmp
+  path: /api/v1/ftr_cong_lmp
+  metadata_path: /api/v1/ftr_cong_lmp/metadata
+  domain: pricing
+- name: Generation and Extra High Voltage Losses
+  feed: gen_ehv_losses
+  path: /api/v1/gen_ehv_losses
+  metadata_path: /api/v1/gen_ehv_losses/metadata
+  domain: generation
+- name: Generation by Fuel Type
+  feed: gen_by_fuel
+  path: /api/v1/gen_by_fuel
+  metadata_path: /api/v1/gen_by_fuel/metadata
+  domain: generation
+- name: Generation Outage for Seven Days by Type
+  feed: gen_outages_by_type
+  path: /api/v1/gen_outages_by_type
+  metadata_path: /api/v1/gen_outages_by_type/metadata
+  domain: outages
+- name: Historical Load Forecasts
+  feed: load_frcstd_hist
+  path: /api/v1/load_frcstd_hist
+  metadata_path: /api/v1/load_frcstd_hist/metadata
+  domain: load
+- name: Hourly Day-Ahead Demand Bids
+  feed: hrl_da_demand_bids
+  path: /api/v1/hrl_da_demand_bids
+  metadata_path: /api/v1/hrl_da_demand_bids/metadata
+  domain: load
+- name: Hourly Day-Ahead Increment Offer and Decrement Bid Data
+  feed: hrl_da_incs_decs
+  path: /api/v1/hrl_da_incs_decs
+  metadata_path: /api/v1/hrl_da_incs_decs/metadata
+  domain: market-offers
+- name: Hourly Demand Bid Data
+  feed: hrl_dmd_bids
+  path: /api/v1/hrl_dmd_bids
+  metadata_path: /api/v1/hrl_dmd_bids/metadata
+  domain: load
+- name: 'Hourly Load: Estimated'
+  feed: hrl_load_estimated
+  path: /api/v1/hrl_load_estimated
+  metadata_path: /api/v1/hrl_load_estimated/metadata
+  domain: load
+- name: 'Hourly Load: Metered'
+  feed: hrl_load_metered
+  path: /api/v1/hrl_load_metered
+  metadata_path: /api/v1/hrl_load_metered/metadata
+  domain: load
+- name: 'Hourly Load: Preliminary'
+  feed: hrl_load_prelim
+  path: /api/v1/hrl_load_prelim
+  metadata_path: /api/v1/hrl_load_prelim/metadata
+  domain: load
+- name: Load Reconciliation Billing Determinants - Daily
+  feed: load_recon_bill_deter_daily
+  path: /api/v1/load_recon_bill_deter_daily
+  metadata_path: /api/v1/load_recon_bill_deter_daily/metadata
+  domain: load
+- name: Load Reconciliation Billing Determinants - Hourly
+  feed: load_recon_bill_deter_hrly
+  path: /api/v1/load_recon_bill_deter_hrly
+  metadata_path: /api/v1/load_recon_bill_deter_hrly/metadata
+  domain: load
+- name: Monthly Financial Transmission Rights Zonal LMPs
+  feed: mnt_ftr_zonal_lmps
+  path: /api/v1/mnt_ftr_zonal_lmps
+  metadata_path: /api/v1/mnt_ftr_zonal_lmps/metadata
+  domain: pricing
+- name: Nodal Reference Prices for Export Credit Screening
+  feed: nodal_ref_prices
+  path: /api/v1/nodal_ref_prices
+  metadata_path: /api/v1/nodal_ref_prices/metadata
+  domain: pricing
+- name: Nodal Reference Prices for Increment Offer & Decrement Bid Screening
+  feed: nodal_refe_prices_incdec
+  path: /api/v1/nodal_refe_prices_incdec
+  metadata_path: /api/v1/nodal_refe_prices_incdec/metadata
+  domain: pricing
+- name: Non-Synchronized Reserve
+  feed: non_sync_reserve
+  path: /api/v1/non_sync_reserve
+  metadata_path: /api/v1/non_sync_reserve/metadata
+  domain: ancillary-services
+- name: Off-Cost Operations
+  feed: off_cost_ops
+  path: /api/v1/off_cost_ops
+  metadata_path: /api/v1/off_cost_ops/metadata
+  domain: settlements
+- name: Operations Summary - Actual Operational Statistics
+  feed: ops_sum_prev_period
+  path: /api/v1/ops_sum_prev_period
+  metadata_path: /api/v1/ops_sum_prev_period/metadata
+  domain: operations
+- name: Operations Summary - Forecast Transfer Limits
+  feed: ops_sum_frcstd_tran_lim
+  path: /api/v1/ops_sum_frcstd_tran_lim
+  metadata_path: /api/v1/ops_sum_frcstd_tran_lim/metadata
+  domain: transmission
+- name: Operations Summary - Projected Area Statistics at Peak
+  feed: ops_sum_frcst_peak_area
+  path: /api/v1/ops_sum_frcst_peak_area
+  metadata_path: /api/v1/ops_sum_frcst_peak_area/metadata
+  domain: operations
+- name: Operations Summary - Projected RTO Statistics at Peak
+  feed: ops_sum_frcst_peak_rto
+  path: /api/v1/ops_sum_frcst_peak_rto
+  metadata_path: /api/v1/ops_sum_frcst_peak_rto/metadata
+  domain: operations
+- name: Operations Summary - Projected Scheduled Tie Flow
+  feed: ops_sum_prjctd_tie_flow
+  path: /api/v1/ops_sum_prjctd_tie_flow
+  metadata_path: /api/v1/ops_sum_prjctd_tie_flow/metadata
+  domain: operations
+- name: PJM Regulation Zone Preliminary Billing Data
+  feed: reg_zone_prelim_bill
+  path: /api/v1/reg_zone_prelim_bill
+  metadata_path: /api/v1/reg_zone_prelim_bill/metadata
+  domain: ancillary-services
+- name: Pricing Nodes
+  feed: Pnode
+  path: /api/v1/Pnode
+  metadata_path: /api/v1/Pnode/metadata
+  domain: pricing
+- name: Real-Time Default Marginal Value Override
+  feed: rt_default_mv_override
+  path: /api/v1/rt_default_mv_override
+  metadata_path: /api/v1/rt_default_mv_override/metadata
+  domain: pricing
+- name: Real-Time Five Minute LMPs
+  feed: rt_fivemin_hrl_lmps
+  path: /api/v1/rt_fivemin_hrl_lmps
+  metadata_path: /api/v1/rt_fivemin_hrl_lmps/metadata
+  domain: pricing
+- name: Real-Time Hourly LMPs
+  feed: rt_hrl_lmps
+  path: /api/v1/rt_hrl_lmps
+  metadata_path: /api/v1/rt_hrl_lmps/metadata
+  domain: pricing
+- name: Real-Time Marginal Value
+  feed: rt_marginal_value
+  path: /api/v1/rt_marginal_value
+  metadata_path: /api/v1/rt_marginal_value/metadata
+  domain: pricing
+- name: Real-Time Scheduled Interchange
+  feed: rt_scheduled_interchange
+  path: /api/v1/rt_scheduled_interchange
+  metadata_path: /api/v1/rt_scheduled_interchange/metadata
+  domain: transmission
+- name: Real-Time Transmission Constraints
+  feed: rt_transn_constraints
+  path: /api/v1/rt_transn_constraints
+  metadata_path: /api/v1/rt_transn_constraints/metadata
+  domain: transmission
+- name: Real-Time Temperature Sets
+  feed: rt_tempset
+  path: /api/v1/rt_tempset
+  metadata_path: /api/v1/rt_tempset/metadata
+  domain: load
+- name: Reconciliation Billing Determinants - Monthly
+  feed: bill_deter_mnt_load
+  path: /api/v1/bill_deter_mnt_load
+  metadata_path: /api/v1/bill_deter_mnt_load/metadata
+  domain: settlements
+- name: Reconciliation Billing Determinants Preliminary Operating Reserves
+  feed: prelim_or_rates
+  path: /api/v1/prelim_or_rates
+  metadata_path: /api/v1/prelim_or_rates/metadata
+  domain: ancillary-services
+- name: Regulation Market Data
+  feed: reg_market_results
+  path: /api/v1/reg_market_results
+  metadata_path: /api/v1/reg_market_results/metadata
+  domain: ancillary-services
+- name: RTO Synchronized Reserve Preliminary Billing Data
+  feed: sync_reserve_prelim_bill
+  path: /api/v1/sync_reserve_prelim_bill
+  metadata_path: /api/v1/sync_reserve_prelim_bill/metadata
+  domain: ancillary-services
+- name: RTO Transfer Limit and Flows
+  feed: transfer_limits_and_flows
+  path: /api/v1/transfer_limits_and_flows
+  metadata_path: /api/v1/transfer_limits_and_flows/metadata
+  domain: transmission
+- name: Scheduled Generation
+  feed: rt_and_self_ecomax
+  path: /api/v1/rt_and_self_ecomax
+  metadata_path: /api/v1/rt_and_self_ecomax/metadata
+  domain: generation
+- name: Settlements Verified Five Minute Ancillary LMPs
+  feed: ancillary_services_fivemin_mnt
+  path: /api/v1/ancillary_services_fivemin_mnt
+  metadata_path: /api/v1/ancillary_services_fivemin_mnt/metadata
+  domain: pricing
+- name: Settlements Verified Five Minute LMPs
+  feed: rt_fivemin_mnt_lmps
+  path: /api/v1/rt_fivemin_mnt_lmps
+  metadata_path: /api/v1/rt_fivemin_mnt_lmps/metadata
+  domain: pricing
+- name: Settlements Verified Hourly Ancillary LMPs
+  feed: ancillary_services_monthly
+  path: /api/v1/ancillary_services_monthly
+  metadata_path: /api/v1/ancillary_services_monthly/metadata
+  domain: pricing
+- name: Settlements Verified Hourly LMPs
+  feed: rt_da_monthly_lmps
+  path: /api/v1/rt_da_monthly_lmps
+  metadata_path: /api/v1/rt_da_monthly_lmps/metadata
+  domain: pricing
+- name: Solar Generation
+  feed: solar_gen
+  path: /api/v1/solar_gen
+  metadata_path: /api/v1/solar_gen/metadata
+  domain: generation
+- name: Synchronized Reserve Events
+  feed: sync_reserve_events
+  path: /api/v1/sync_reserve_events
+  metadata_path: /api/v1/sync_reserve_events/metadata
+  domain: ancillary-services
+- name: Up-to-Congestion Bid Screening
+  feed: utc_bid_screening
+  path: /api/v1/utc_bid_screening
+  metadata_path: /api/v1/utc_bid_screening/metadata
+  domain: market-offers
+- name: Wind Generation
+  feed: wind_gen
+  path: /api/v1/wind_gen
+  metadata_path: /api/v1/wind_gen/metadata
+  domain: generation
+feeds_from_release_notes_note: >-
+  Feed short names announced in the Data Miner release notes that are not in the
+  Appendix A table of guide v15. Source:
+  https://www.pjm.com/markets-and-operations/etools/data-miner-2/data-miner-2-release-notes.aspx
+feeds_from_release_notes:
+- name: Day-Ahead Ancillary Service Market Results
+  feed: da_reserve_market_results
+  added_release: '22.09'
+- name: Day-Ahead Ancillary Service LMPs
+  feed: da_ancillary_services
+  added_release: '22.09'
+- name: Dispatched Reserves
+  feed: dispatched_reserves
+  added_release: '22.09'
+- name: Operational Reserves
+  feed: operational_reserves
+  added_release: '22.09'
+- name: Real-Time Dispatched Reserves
+  feed: rt_dispatch_reserves
+  added_release: '22.09'
+- name: Reserve Subzone Buses
+  feed: sync_pri_reserves_buses_list
+  added_release: '22.09'
+- name: Reserve Subzone Resources
+  feed: sync_pri_reserves_resources_list
+  added_release: '22.09'
+- name: Synchronized Reserve Preliminary Billing Data
+  feed: sync_reserve_prelim_billing
+  added_release: '22.09'
+- name: Non-Synchronized Reserve Preliminary Billing Data
+  feed: non_sync_reserve_prelim_billing
+  added_release: '22.09'
+- name: Secondary Synchronized Reserve Preliminary Billing Data
+  feed: secondary_nonsync_reserve_prelim_billing
+  added_release: '22.09'
+- name: Seven-Day Load Forecast
+  feed: load_frcstd_7_day
+  added_release: '23.10'

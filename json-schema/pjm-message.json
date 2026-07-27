@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/pjm/refs/heads/main/json-schema/pjm-message.json",
+  "title": "PJM Messages Public Web Service response",
+  "description": "Derived by API Evangelist from the verbatim live response of GET https://messages.pjm.com/messages/rest/public/messages (Accept: application/json), captured 2026-07-27 and saved at examples/pjm-messages-public-response.json. PJM publishes no schema for this endpoint; field names, types and null-ability are taken only from the observed payload, so fields that were empty or null in that capture are typed permissively rather than guessed.",
+  "x-provenance": {
+    "generated": "2026-07-27",
+    "method": "derived",
+    "source": "examples/pjm-messages-public-response.json",
+    "endpoint": "https://messages.pjm.com/messages/rest/public/messages"
+  },
+  "type": "object",
+  "required": ["messages"],
+  "properties": {
+    "messages": {
+      "type": "array",
+      "description": "Current PJM tool/website planned-change and impact notices, the same set rendered on https://www.pjm.com/markets-and-operations/etools/upcoming-changes",
+      "items": { "$ref": "#/$defs/message" }
+    }
+  },
+  "$defs": {
+    "message": {
+      "type": "object",
+      "properties": {
+        "userMessageId": {
+          "type": "integer",
+          "description": "PJM identifier for the notice."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Short title of the notice."
+        },
+        "message": {
+          "type": "string",
+          "description": "Notice body as pre-rendered HTML, including inline style attributes."
+        },
+        "messageRaw": {
+          "type": "string",
+          "description": "Notice body as authored HTML, without PJM's presentation wrapper."
+        },
+        "appearanceFlag": {
+          "type": "boolean",
+          "description": "Whether the notice is currently displayed."
+        },
+        "blockAccessFlag": {
+          "type": "boolean",
+          "description": "Whether the notice corresponds to an access-blocking event."
+        },
+        "effectiveDate": {
+          "type": ["integer", "null"],
+          "description": "Epoch milliseconds at which the notice becomes effective."
+        },
+        "terminateDate": {
+          "type": ["integer", "null"],
+          "description": "Epoch milliseconds at which the notice expires."
+        },
+        "applications": {
+          "type": "array",
+          "description": "Human-readable names of the affected PJM tools/applications.",
+          "items": { "type": "string" }
+        },
+        "applicationIds": {
+          "type": "array",
+          "description": "PJM numeric identifiers of the affected applications, positionally aligned with applications.",
+          "items": { "type": "integer" }
+        },
+        "sortedApplications": {
+          "type": "array",
+          "description": "The applications list in PJM's display order.",
+          "items": { "type": "string" }
+        },
+        "changeStart": {
+          "type": ["integer", "null"],
+          "description": "Epoch milliseconds for the start of the change window."
+        },
+        "changeEnd": {
+          "type": ["integer", "null"],
+          "description": "Epoch milliseconds for the end of the change window."
+        },
+        "changeDuration": {
+          "type": ["string", "integer", "null"],
+          "description": "Duration of impact. Null in the captured response; type left permissive because no populated example was observed."
+        },
+        "messageActions": {
+          "type": "array",
+          "description": "Actions required of the reader, e.g. 'No action required/information only', 'Please share within your organization'.",
+          "items": { "type": "string" }
+        },
+        "messageImpacts": {
+          "type": "array",
+          "description": "Impact descriptors. Empty in the captured response; item type not asserted because no populated example was observed.",
+          "items": {}
+        }
+      }
+    }
+  }
+}

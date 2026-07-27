@@ -1,0 +1,133 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  PJM Data Miner API Guide (v15, 02/10/2026) section V.C, plus HTTP statuses observed
+  on anonymous probes of api.pjm.com, messages.pjm.com, services.pjm.com,
+  pjmoasis.pjm.com and emergencyprocedures.pjm.com on 2026-07-27.
+format: custom
+rfc9457: false
+note: >-
+  PJM does not use RFC 9457 problem+json. Data Miner 2 returns a proprietary JSON
+  envelope with an errors[] array; the eTools JAX-RS surfaces return a RESTEasy XML
+  errorResponse document. No error code registry is published — the message strings
+  below are quoted verbatim from PJM's own guide, and the status codes are the ones
+  observed live.
+envelopes:
+- surface: PJM Data Miner 2 API
+  media_type: application/json
+  shape: '{"errors": [{"field": "<field>", "message": "<message>", "detail": ["<attribute>"]}]}'
+  fields:
+    field: The request component at fault (Filters, Order, Sort).
+    message: Human-readable explanation.
+    detail: Optional array naming the offending attribute(s).
+- surface: PJM eTools JAX-RS (RESTEasy) browserless interfaces
+  media_type: application/xml
+  shape: '<errorResponse><errorType>...</errorType><message>...</message></errorResponse>'
+  example_observed: >-
+    HTTP 500 with errorType javax.ws.rs.NotFoundException and message
+    "RESTEASY003210: Could not find resource for full path: ..." from GET
+    https://emergencyprocedures.pjm.com/ep/rest/public/procedures on 2026-07-27.
+statuses:
+- status: 200
+  meaning: Success.
+  surfaces: [Data Miner 2, Messages public web service, OASIS public information page]
+- status: 400
+  meaning: >-
+    Validation failure. Returned for the documented filter/sort/order errors below,
+    and when download=true is used and the maximum row threshold is crossed.
+  surface: Data Miner 2
+- status: 401
+  meaning: >-
+    Missing or invalid Azure API Management subscription key. Every Data Miner feed
+    answers 401 anonymously.
+  surface: Data Miner 2
+  verified:
+  - 'GET https://api.pjm.com/api/v1/ -> 401'
+  - 'GET https://api.pjm.com/api/v1/gen_by_fuel?rowCount=1 -> 401'
+  - 'GET https://api.pjm.com/api/v1/gen_by_fuel/metadata -> 401'
+  - 'GET https://api-train.pjm.com/api/v1/pnode -> 401'
+  - 'GET https://services.pjm.com/PJMDataminerApi/api/Ancillary/GetDispatchReserves -> 401'
+- status: 404
+  meaning: >-
+    Unknown feed short name. Distinguishes a non-existent route from a key-gated one —
+    real feeds answer 401 anonymously, invented feed names answer 404.
+  surface: Data Miner 2
+  verified: 'GET https://api.pjm.com/api/v1/instantaneous-dispatch-rates -> 404'
+- status: 405
+  meaning: Method not allowed — the SSO authenticate endpoint is POST-only.
+  surface: PJM single sign-on
+  verified: 'GET https://sso.pjm.com/access/authenticate/ -> 405'
+- status: 500
+  meaning: >-
+    Server error. Observed on the public Swashbuckle discovery path
+    (https://services.pjm.com/PJMDataminerApi/swagger/docs/v1 returns
+    {"message":"An error has occurred."}), and as the RESTEasy not-found envelope on
+    the eTools JAX-RS surface.
+  surfaces: [Data Miner 2 Swagger discovery, eTools JAX-RS]
+problems:
+- id: datetime-filter-missing
+  status: 400
+  field: Filters
+  message: >-
+    A datetime is missing. Please input values for datetime_beginning_ept or
+    datetime_beginning_utc
+  detail: [datetime_filter]
+  cause: >-
+    Both standard and historic queries against the archived feeds require a date
+    parameter.
+  remediation: Add datetime_beginning_ept or datetime_beginning_utc to the request.
+  source: PJM Data Miner API Guide section V.C.i.i
+- id: date-range-spans-archive-boundary
+  status: 400
+  field: Filters
+  message: >-
+    Date range in the API request spans over archived and standard data. Please
+    update the request. Refer to API Guide for more information.
+  cause: >-
+    The requested window crosses the feed's archive cutoff (731 days for
+    rt_hrl_lmps and da_hrl_lmps, 186 days for rt_fivemin_hrl_lmps).
+  remediation: Split the request into one archived-side query and one standard-side query.
+  source: PJM Data Miner API Guide section V.C.i.ii
+- id: archived-range-outside-calendar-year
+  status: 400
+  field: Filters
+  message: Archived data date range must be within same calendar year. Please enter valid dates
+  cause: Historic (archived) queries must start and end within the same UTC calendar year.
+  remediation: Break the query into one request per calendar year.
+  source: PJM Data Miner API Guide section V.C.ii.v
+- id: custom-order-not-available-on-archived-data
+  status: 400
+  field: Order
+  message: Custom Order is not an available option on archived data. Please remove order from the request
+  cause: Archived data is always returned sorted by datetime_beginning_utc ascending.
+  remediation: Remove the order parameter from archived-data requests.
+  source: PJM Data Miner API Guide section V.C.ii.vi
+- id: custom-sort-not-available-on-archived-data
+  status: 400
+  field: Sort
+  message: Custom Sort is not an available option on archived data. Please remove sort from the request
+  detail: [datetime_beginning_utc]
+  cause: Archived data has no sorting capability.
+  remediation: Remove the sort parameter from archived-data requests.
+  source: PJM Data Miner API Guide section V.C.ii.vi
+- id: invalid-attribute-for-archived-data
+  status: 400
+  field: Filters
+  message: >-
+    The API request contains invalid attribute(s) for archived data - Pnode_Id.
+    Please update the request and retry.
+  detail: [pnode_id]
+  cause: >-
+    Archived data may only be filtered on dates, type, row_is_current and
+    version_nbr. Note that type is not an allowed filter on Real-Time Five-Minute
+    LMPs for either standard or archived data.
+  remediation: Remove the unsupported filter, or query the standard (non-archived) window.
+  source: PJM Data Miner API Guide section V.C.ii.vii
+- id: date-range-exceeds-366-days
+  status: 400
+  field: Filters
+  message: 'Error: Date range cannot exceed 366 days. Please ...'
+  cause: The date-value range on a standard query must be less than 366 days.
+  remediation: Split the request into windows shorter than 366 days.
+  source: PJM Data Miner API Guide section III (date attribute descriptions)
+  note: The guide truncates the remediation sentence in the rendered table; the leading text is quoted verbatim.
