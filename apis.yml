@@ -115,6 +115,12 @@ apis:
   image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - Status
+  - Notification
+  - Planned Outages
+  - Grid Operations
+  - Open Access
+  tags_raw:
+  - Status
   - Notifications
   - Planned Outages
   - Grid Operations
