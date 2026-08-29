@@ -24,6 +24,17 @@ description: >-
   https://messages.pjm.com/messages/rest/public/messages, linked as "Web Service" from
   the Upcoming Changes page, returns the planned-outage and impact notices for the
   whole PJM tool estate with no credential, in XML or JSON.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
 tags:
 - Energy
