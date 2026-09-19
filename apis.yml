@@ -220,6 +220,11 @@ apis:
   image: https://www.pjm.com/assets/MVC/responsive/img/pjm-logo.png
   tags:
   - Authentication
+  - SSO
+  - Security
+  - PKI
+  tags_raw:
+  - Authentication
   - Single Sign-On
   - Security
   - PKI
