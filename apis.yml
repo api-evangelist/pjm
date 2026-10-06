@@ -63,7 +63,7 @@ tags:
 - Market Data
 - Demand Response
 created: '2026-07-27'
-modified: '2026-07-27'
+modified: '2026-10-06'
 specificationVersion: '0.23'
 apis:
 - aid: pjm:pjm-data-miner-2-api
@@ -301,6 +301,8 @@ apis:
   - type: Vocabulary
     url: https://www.pjm.com/pjmfiles/pub/etools/edart/xmldocs/xmldoc.html
 common:
+- url: https://www.pjm.com/about-pjm/newsroom
+  type: Blog
 - type: VulnerabilityDisclosure
   url: security/pjm-vulnerability-disclosure.yml
 - type: DomainSecurity
