@@ -10,10 +10,17 @@
     },
     {
       "source": "https://insidelines.pjm.com/",
+      "feed_url": "https://insidelines.pjm.com/",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    },
+    {
+      "source": "https://insidelines.pjm.com/news/feed/",
       "feed_url": "https://insidelines.pjm.com/news/feed/",
       "title": "",
       "saved": 0,
-      "method": "discovered"
+      "method": "none"
     },
     {
       "source": "https://www.pjm.com/markets-and-operations/etools/security.aspx",
@@ -24,5 +31,5 @@
     }
   ],
   "post_count": 0,
-  "fetched": "2026-10-10T13:15:00Z"
+  "fetched": "2026-10-17T14:53:57Z"
 }
